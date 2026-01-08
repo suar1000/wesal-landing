@@ -3,70 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خدمة وصال | Wesal Travel</title>
+    <title>Wesal Travel | وكالة وصال للخدمات المتعددة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #0056b3;
-            --secondary-color: #00d2ff;
-            --bg-color: #f4f7f6;
-            --text-color: #333;
-        }
-        body { 
-            font-family: 'Tajawal', sans-serif; 
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            background-attachment: fixed;
-            color: var(--text-color); 
-            margin: 0;
-            padding: 20px; 
-        }
-        .container { 
-            max-width: 550px; 
-            background: white; 
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
-            margin: auto; 
-        }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header img { 
-            max-width: 150px; 
-            height: auto;
-            margin-bottom: 15px; 
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .header h1 { color: var(--primary-color); margin: 0; font-size: 26px; }
-        .header p { color: #666; margin-top: 10px; }
-        
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #444; }
-        input, select { 
-            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; 
-            box-sizing: border-box; transition: 0.3s; font-family: 'Tajawal';
-        }
-        input:focus { border-color: var(--secondary-color); outline: none; }
-        
-        .info-box {
-            background: #eef9ff; padding: 15px; border-radius: 10px;
-            border-right: 5px solid var(--secondary-color);
-            font-size: 14px; margin-bottom: 20px; color: #555;
+            --primary: #0056b3;
+            --secondary: #00d2ff;
+            --accent: #25d366;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
-        .price-tag { 
-            text-align: center; background: #fff5f5; color: #e74c3c; 
-            padding: 15px; border-radius: 10px; font-weight: bold; 
-            font-size: 22px; margin: 25px 0; border: 1px solid #ffcccc;
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-attachment: fixed;
+            margin: 0; padding: 20px; color: #333; 
+            display: flex; flex-direction: column; align-items: center;
         }
-        
-        button { 
-            width: 100%; padding: 18px; background: #25d366; color: white; 
-            border: none; border-radius: 10px; font-size: 20px; font-weight: bold;
-            cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+
+        .container { 
+            max-width: 550px; width: 100%; background: var(--white); 
+            padding: 30px; border-radius: 25px; box-shadow: var(--shadow);
+            margin-bottom: 30px;
         }
-        button:hover { background: #1ebe57; transform: translateY(-2px); }
-        
-        .footer-text { text-align: center; font-size: 14px; color: #888; margin-top: 20px; }
+
+        .header { text-align: center; margin-bottom: 25px; }
+        .header img { 
+            max-width: 130px; height: auto; border-radius: 15px; 
+            margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .header h2 { margin: 0; color: var(--primary); font-size: 24px; }
+
+        .services-nav { 
+            display: flex; gap: 8px; margin-bottom: 25px; 
+            background: #f0f2f5; padding: 5px; border-radius: 15px;
+        }
+        .nav-btn { 
+            flex: 1; padding: 12px 5px; border: none; border-radius: 12px; 
+            background: transparent; cursor: pointer; font-family: 'Tajawal'; 
+            font-weight: bold; transition: 0.3s; font-size: 13px; color: #555;
+        }
+        .nav-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        .service-form { display: none; animation: slideUp 0.4s ease; }
+        .service-form.active { display: block; }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
+        input, select { 
+            width: 100%; padding: 12px; border: 2px solid #edf2f7; border-radius: 12px; 
+            box-sizing: border-box; font-family: 'Tajawal';
+        }
+
+        .price-box { background: #fff5f5; color: #e74c3c; padding: 12px; border-radius: 12px; text-align: center; font-weight: bold; margin: 15px 0; border: 1px solid #ffcccc; }
+
+        button.send-btn { 
+            width: 100%; padding: 18px; background: var(--accent); color: white; 
+            border: none; border-radius: 15px; font-size: 18px; font-weight: bold;
+            cursor: pointer; transition: 0.3s; box-shadow: 0 6px 15px rgba(37,211,102,0.3);
+        }
+
+        /* قسم آراء العملاء */
+        .testimonials { width: 100%; max-width: 550px; }
+        .testimonials h3 { color: white; text-align: center; margin-bottom: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.9); padding: 15px; 
+            border-radius: 15px; margin-bottom: 15px; position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .testimonial-card p { margin: 0; font-size: 14px; color: #444; line-height: 1.6; }
+        .customer-name { font-weight: bold; color: var(--primary); font-size: 13px; margin-top: 10px; display: block; }
+        .stars { color: #ffc107; font-size: 12px; margin-top: 5px; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -74,98 +84,99 @@
 <div class="container">
     <div class="header">
         <img src="https://i.ibb.co/7xqxZ0hP/Wesal-Logo.png" alt="Wesal Travel Logo">
-        <h1>Wesal Travel - Student Services 💙👩🏽‍🎓</h1>
-        <p>ديما معاك لاستخراج الشهادات بكل سهولة</p>
+        <h2>Wesal Travel</h2>
+        <p>خدمات السفر، التأشيرات، والخدمات الطلابية</p>
     </div>
+
+    <div class="services-nav">
+        <button class="nav-btn active" onclick="showService('student', this)">🎓 الشهادات</button>
+        <button class="nav-btn" onclick="showService('flight', this)">✈️ حجز طيران</button>
+        <button class="nav-btn" onclick="showService('visa', this)">🌍 التأشيرات</button>
+    </div>
+
+    <div id="student" class="service-form active">
+        <div class="input-group">
+            <label>👤 اسم الطالب بالكامل:</label>
+            <input type="text" id="std_name">
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <div class="input-group" style="flex: 1;"><label>🔢 رقم الجلوس:</label><input type="text" id="std_seat"></div>
+            <div class="input-group" style="flex: 1;"><label>📅 السنة:</label><input type="number" id="std_year" value="2024"></div>
+        </div>
+        <div class="input-group">
+            <label>🌐 اللغة المطلوبة:</label>
+            <select id="std_lang"><option>عربي</option><option>إنجليزي</option></select>
+        </div>
+        <div class="price-box">تكلفة الخدمة: 150,000 جنيه</div>
+    </div>
+
+    <div id="flight" class="service-form">
+        <div class="input-group">
+            <label>👤 اسم المسافر:</label>
+            <input type="text" id="fly_name">
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <div class="input-group" style="flex: 1;"><label>🛫 من:</label><input type="text" id="fly_from"></div>
+            <div class="input-group" style="flex: 1;"><label>🛬 إلى:</label><input type="text" id="fly_to"></div>
+        </div>
+    </div>
+
+    <div id="visa" class="service-form">
+        <div class="input-group">
+            <label>👤 الاسم الكامل:</label>
+            <input type="text" id="visa_name">
+        </div>
+        <div class="input-group">
+            <label>🚩 وجهة التأشيرة:</label>
+            <input type="text" id="visa_country">
+        </div>
+    </div>
+
+    <button class="send-btn" onclick="sendOrder()">✅ إرسال الطلب عبر واتساب</button>
+</div>
+
+<div class="testimonials">
+    <h3>ماذا يقول عملاؤنا 💬</h3>
     
-    <div class="input-group">
-        <label>👤 اسم الطالب بالكامل:</label>
-        <input type="text" id="name" placeholder="مثال: محمد أحمد علي">
+    <div class="testimonial-card">
+        <p>"خدمة ممتازة وسريعة جداً في استخراج الشهادة السودانية، استلمتها في وقت قياسي. شكراً وصال ترافيل."</p>
+        <span class="customer-name">محمد أحمد - خدمة الطلاب</span>
+        <div class="stars">⭐⭐⭐⭐⭐</div>
     </div>
 
-    <div style="display: flex; gap: 10px;">
-        <div class="input-group" style="flex: 1;">
-            <label>🔢 رقم الجلوس:</label>
-            <input type="text" id="seat">
-        </div>
-        <div class="input-group" style="flex: 1;">
-            <label>📅 سنة الامتحان:</label>
-            <input type="number" id="year" value="2024">
-        </div>
+    <div class="testimonial-card">
+        <p>"حجزت تذكرتي للقاهرة من خلالهم، التعامل راقي جداً والأسعار منافسة مقارنة بالسوق."</p>
+        <span class="customer-name">سارة محمود - حجز طيران</span>
+        <div class="stars">⭐⭐⭐⭐⭐</div>
     </div>
 
-    <div class="input-group">
-        <label>🏫 اسم المدرسة:</label>
-        <input type="text" id="school">
+    <div class="testimonial-card">
+        <p>"استخرجت تأشيرة زيارة لسلطنة عمان بكل سهولة ووضوح في الإجراءات. أنصح بالتعامل معهم."</p>
+        <span class="customer-name">أحمد عبد الله - تأشيرات</span>
+        <div class="stars">⭐⭐⭐⭐⭐</div>
     </div>
-
-    <div class="input-group">
-        <label>📍 ولاية الامتحان:</label>
-        <input type="text" id="state">
-    </div>
-
-    <div class="input-group">
-        <label>📊 النسبة المئوية (%):</label>
-        <input type="text" id="percent" placeholder="مثال: 85.4%">
-    </div>
-
-    <div class="input-group">
-        <label>👩 اسم الوالدة كاملاً:</label>
-        <input type="text" id="mother">
-    </div>
-
-    <div class="input-group">
-        <label>🌐 لغة الشهادة المطلوبة:</label>
-        <select id="lang">
-            <option value="عربي">العربية (تتطلب الرقم الوطني)</option>
-            <option value="إنجليزي">الإنجليزية (تتطلب جواز السفر)</option>
-        </select>
-    </div>
-
-    <div class="info-box">
-        💡 <b>ملاحظة:</b> بعد الضغط على زر الإرسال، سيفتح لك تطبيق واتساب؛ يرجى <b>إرفاق صورة الهوية</b> (جواز أو رقم وطني) يدوياً في المحادثة.
-    </div>
-
-    <div class="price-tag">التكلفة: 150,000 جنيه 🔥</div>
-
-    <button onclick="handleSend()">✅ إرسال الطلب عبر واتساب</button>
-
-    <div class="footer-text">Wesal Travel - سرعة، دقة، وموثوقية</div>
 </div>
 
 <script>
-    function handleSend() {
-        const phone = "201500346550"; 
-        
-        const name = document.getElementById('name').value;
-        const seat = document.getElementById('seat').value;
-        const school = document.getElementById('school').value;
-        const year = document.getElementById('year').value;
-        const state = document.getElementById('state').value;
-        const percent = document.getElementById('percent').value;
-        const mother = document.getElementById('mother').value;
-        const lang = document.getElementById('lang').value;
+    let activeService = 'student';
+    function showService(id, btn) {
+        activeService = id;
+        document.querySelectorAll('.service-form').forEach(f => f.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    }
 
-        if(!name || !seat) {
-            alert("الرجاء إدخال الاسم ورقم الجلوس على الأقل");
-            return;
+    function sendOrder() {
+        const phone = "201500346550";
+        let message = `*طلب جديد - Wesal Travel* 💙%0A`;
+        if(activeService === 'student') {
+            message += `🎓 خدمة الشهادات: ${document.getElementById('std_name').value}`;
+        } else if(activeService === 'flight') {
+            message += `✈️ حجز طيران من ${document.getElementById('fly_from').value} إلى ${document.getElementById('fly_to').value}`;
+        } else {
+            message += `🌍 تأشيرة لـ ${document.getElementById('visa_country').value}`;
         }
-
-        const message = `*طلب جديد - Wesal Travel* 💙%0A` +
-                        `----------------------------%0A` +
-                        `👤 *اسم الطالب:* ${name}%0A` +
-                        `🔢 *رقم الجلوس:* ${seat}%0A` +
-                        `🏫 *المدرسة:* ${school}%0A` +
-                        `📅 *السنة:* ${year}%0A` +
-                        `📍 *الولاية:* ${state}%0A` +
-                        `📊 *النسبة:* ${percent}%0A` +
-                        `👩 *اسم الوالدة:* ${mother}%0A` +
-                        `🌐 *اللغة:* ${lang}%0A` +
-                        `----------------------------%0A` +
-                        `💰 *التكلفة:* 150,000 جنيه%0A` +
-                        `----------------------------%0A` +
-                        `*(سأقوم بإرفاق صورة الهوية الآن..)*`;
-
         window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     }
 </script>
