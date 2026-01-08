@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خدمة وصال | استخراج الشهادات السودانية</title>
+    <title>خدمة وصال | Wesal Travel</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -29,7 +29,15 @@
             margin: auto; 
         }
         .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: var(--primary-color); margin: 0; font-size: 28px; }
+        /* تعديل حجم اللوجو الخاص بك هنا */
+        .header img { 
+            max-width: 150px; 
+            height: auto;
+            margin-bottom: 15px; 
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 { color: var(--primary-color); margin: 0; font-size: 26px; }
         .header p { color: #666; margin-top: 10px; }
         
         .input-group { margin-bottom: 20px; }
@@ -60,13 +68,14 @@
         button:disabled { background: #ccc; cursor: not-allowed; }
         
         .footer-text { text-align: center; font-size: 14px; color: #888; margin-top: 20px; }
-        #status-msg { text-align: center; font-size: 14px; color: var(--primary-color); display: none; margin-top: 10px; }
+        #status-msg { text-align: center; font-size: 14px; color: var(--primary-color); display: none; margin-top: 10px; font-weight: bold;}
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
+        <img src="https://i.ibb.co/7xqxZ0hP/Wesal-Logo.png" alt="Wesal Travel Logo">
         <h1>Wesal Travel - Student Services 💙👩🏽‍🎓</h1>
         <p>ديما معاك لاستخراج الشهادات بكل سهولة</p>
     </div>
@@ -136,28 +145,19 @@
         const statusMsg = document.getElementById('status-msg');
         const fileInput = document.getElementById('fileInput');
 
-        // جلب البيانات
         const name = document.getElementById('name').value;
         const seat = document.getElementById('seat').value;
-        const school = document.getElementById('school').value;
-        const year = document.getElementById('year').value;
-        const state = document.getElementById('state').value;
-        const percent = document.getElementById('percent').value;
-        const mother = document.getElementById('mother').value;
-        const lang = document.getElementById('lang').value;
 
         if(!name || !seat || !fileInput.files[0]) {
-            alert("الرجاء ملء اسم الطالب ورقم الجلوس وإرفاق صورة الهوية");
+            alert("الرجاء ملء الاسم ورقم الجلوس وإرفاق صورة الهوية");
             return;
         }
 
-        // بدء عملية التحميل
         btn.disabled = true;
         btn.innerText = "جاري الرفع...";
         statusMsg.style.display = "block";
 
         try {
-            // رفع الصورة إلى خدمة ImgBB
             const formData = new FormData();
             formData.append("image", fileInput.files[0]);
             
@@ -167,33 +167,46 @@
             });
             
             const result = await response.json();
-            const imageUrl = result.data.url;
+            
+            if(result.success) {
+                sendFinalMessage(phone, name, seat, result.data.url);
+            } else { throw new Error(); }
 
-            // تجهيز الرسالة النهائية
-            const message = `*طلب جديد - Wesal Travel* 💙%0A` +
-                            `----------------------------%0A` +
-                            `👤 *اسم الطالب:* ${name}%0A` +
-                            `🔢 *رقم الجلوس:* ${seat}%0A` +
-                            `🏫 *المدرسة:* ${school}%0A` +
-                            `📅 *السنة:* ${year}%0A` +
-                            `📍 *الولاية:* ${state}%0A` +
-                            `📊 *النسبة:* ${percent}%0A` +
-                            `👩 *اسم الوالدة:* ${mother}%0A` +
-                            `🌐 *اللغة:* ${lang}%0A` +
-                            `----------------------------%0A` +
-                            `🖼️ *رابط صورة الهوية:* ${imageUrl}%0A` +
-                            `💰 *التكلفة:* 150,000 جنيه%0A` +
-                            `----------------------------%0A` +
-                            `*تم استلام الطلب بنجاح ✅*`;
-
-            window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
         } catch (error) {
-            alert("حدث خطأ أثناء رفع الصورة. تأكد من اتصال الإنترنت وحاول مجدداً.");
+            alert("تنبيه: تعذر رفع الصورة تلقائياً، يرجى إرفاقها يدوياً في واتساب.");
+            sendFinalMessage(phone, name, seat, "يرجى إرفاقها يدوياً");
         } finally {
             btn.disabled = false;
             btn.innerText = "✅ إرسال الطلب عبر واتساب";
             statusMsg.style.display = "none";
         }
+    }
+
+    function sendFinalMessage(phone, name, seat, imageUrl) {
+        const school = document.getElementById('school').value;
+        const year = document.getElementById('year').value;
+        const state = document.getElementById('state').value;
+        const percent = document.getElementById('percent').value;
+        const mother = document.getElementById('mother').value;
+        const lang = document.getElementById('lang').value;
+
+        const message = `*طلب جديد - Wesal Travel* 💙%0A` +
+                        `----------------------------%0A` +
+                        `👤 *اسم الطالب:* ${name}%0A` +
+                        `🔢 *رقم الجلوس:* ${seat}%0A` +
+                        `🏫 *المدرسة:* ${school}%0A` +
+                        `📅 *السنة:* ${year}%0A` +
+                        `📍 *الولاية:* ${state}%0A` +
+                        `📊 *النسبة:* ${percent}%0A` +
+                        `👩 *اسم الوالدة:* ${mother}%0A` +
+                        `🌐 *اللغة:* ${lang}%0A` +
+                        `----------------------------%0A` +
+                        `🖼️ *صورة الهوية:* ${imageUrl}%0A` +
+                        `💰 *التكلفة:* 150,000 جنيه%0A` +
+                        `----------------------------%0A` +
+                        `*تم استلام الطلب ✅*`;
+
+        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     }
 </script>
 </body>
