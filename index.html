@@ -3,68 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خدمة وصال - استخراج الشهادات</title>
+    <title>خدمة وصال | استخراج الشهادات السودانية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f8ff; color: #333; padding: 20px; }
-        .container { max-width: 500px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: auto; }
-        h2 { color: #0056b3; text-align: center; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background-color: #0056b3; color: white; border: none; border-radius: 8px; font-size: 18px; cursor: pointer; }
-        button:hover { background-color: #004494; }
-        .price { text-align: center; color: #d9534f; font-weight: bold; font-size: 20px; margin: 20px 0; }
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #00d2ff;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-attachment: fixed;
+            color: var(--text-color); 
+            margin: 0;
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 550px; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+            margin: auto; 
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { color: var(--primary-color); margin: 0; font-size: 28px; }
+        .header p { color: #666; margin-top: 10px; }
+        
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #444; }
+        input, select { 
+            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; 
+            box-sizing: border-box; transition: 0.3s; font-family: 'Tajawal';
+        }
+        input:focus { border-color: var(--secondary-color); outline: none; }
+        
+        .upload-section {
+            background: #f9f9f9; padding: 15px; border: 2px dashed #00d2ff;
+            border-radius: 10px; text-align: center; margin-bottom: 20px;
+        }
+
+        .price-tag { 
+            text-align: center; background: #fff5f5; color: #e74c3c; 
+            padding: 15px; border-radius: 10px; font-weight: bold; 
+            font-size: 22px; margin: 25px 0; border: 1px solid #ffcccc;
+        }
+        
+        button { 
+            width: 100%; padding: 16px; background: #25d366; color: white; 
+            border: none; border-radius: 10px; font-size: 18px; font-weight: bold;
+            cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+        }
+        button:hover { background: #1ebe57; transform: translateY(-2px); }
+        
+        .footer-text { text-align: center; font-size: 14px; color: #888; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>💙 خدمة وصال ديما معاك</h2>
-    <p style="text-align: center;">الرجاء ملء البيانات بدقة لاستخراج الشهادة</p>
+    <div class="header">
+        <h1>💙 خدمة وصال</h1>
+        <p>ديما معاك لاستخراج الشهادات بكل سهولة</p>
+    </div>
     
     <div class="input-group">
-        <label>اسم الطالب:</label>
-        <input type="text" id="name" placeholder="الاسم الرباعي">
+        <label>👤 اسم الطالب بالكامل:</label>
+        <input type="text" id="name" placeholder="مثال: محمد أحمد علي">
     </div>
-    <div class="input-group">
-        <label>رقم الجلوس:</label>
-        <input type="text" id="seat">
+
+    <div style="display: flex; gap: 10px;">
+        <div class="input-group" style="flex: 1;">
+            <label>🔢 رقم الجلوس:</label>
+            <input type="text" id="seat">
+        </div>
+        <div class="input-group" style="flex: 1;">
+            <label>📅 سنة الامتحان:</label>
+            <input type="number" id="year" value="2024">
+        </div>
     </div>
+
     <div class="input-group">
-        <label>اسم المدرسة:</label>
+        <label>🏫 اسم المدرسة:</label>
         <input type="text" id="school">
     </div>
+
     <div class="input-group">
-        <label>سنة الامتحان:</label>
-        <input type="number" id="year" value="2024">
-    </div>
-    <div class="input-group">
-        <label>ولاية الامتحان:</label>
+        <label>📍 ولاية الامتحان:</label>
         <input type="text" id="state">
     </div>
+
     <div class="input-group">
-        <label>النسبة بالضبط:</label>
-        <input type="text" id="percent">
+        <label>📊 النسبة المئوية (%):</label>
+        <input type="text" id="percent" placeholder="مثال: 85.4%">
     </div>
+
     <div class="input-group">
-        <label>اسم الوالدة:</label>
+        <label>👩 اسم الوالدة كاملاً:</label>
         <input type="text" id="mother">
     </div>
+
     <div class="input-group">
-        <label>لغة نسخة الشهادة:</label>
+        <label>🌐 لغة الشهادة المطلوبة:</label>
         <select id="lang">
-            <option value="عربي">عربي (يتطلب الرقم الوطني)</option>
-            <option value="إنجليزي">إنجليزي (يتطلب الجواز)</option>
+            <option value="عربي">العربية (تتطلب الرقم الوطني)</option>
+            <option value="إنجليزي">الإنجليزية (تتطلب جواز السفر)</option>
         </select>
     </div>
 
-    <p class="price">السعر: 150 ألف جنيه 🔥</p>
-    <button onclick="sendToWA()">إرسال البيانات عبر واتساب</button>
+    <div class="upload-section">
+        <label>📸 أرفق صورة الهوية (جواز/رقم وطني):</label>
+        <input type="file" id="fileInput" accept="image/*">
+        <p style="font-size: 12px; color: #666; margin-top: 5px;">سيتم إرسال الصورة في الخطوة التالية عبر الواتساب</p>
+    </div>
+
+    <div class="price-tag">التكلفة: 150,000 جنيه 🔥</div>
+
+    <button onclick="sendToWA()">✅ إرسال الطلب عبر واتساب</button>
+
+    <div class="footer-text">خدمة وصال - سرعة، دقة، وموثوقية</div>
 </div>
 
 <script>
     function sendToWA() {
-        const phone = "201142439809"; // ضع رقمك هنا مفتاح الدولة ثم الرقم
+        const phone = "201500346550"; // تأكد من وضع رقمك هنا
         const name = document.getElementById('name').value;
         const seat = document.getElementById('seat').value;
         const school = document.getElementById('school').value;
@@ -74,20 +138,27 @@
         const mother = document.getElementById('mother').value;
         const lang = document.getElementById('lang').value;
 
-        const message = `*طلب استخراج شهادة - خدمة وصال*%0A` +
-                        `🔵 اسم الطالب: ${name}%0A` +
-                        `🔵 رقم الجلوس: ${seat}%0A` +
-                        `🔵 اسم المدرسة: ${school}%0A` +
-                        `🔵 سنة الامتحان: ${year}%0A` +
-                        `🔵 ولاية الامتحان: ${state}%0A` +
-                        `🔵 النسبة: ${percent}%0A` +
-                        `🔵 اسم الوالدة: ${mother}%0A` +
-                        `🔵 اللغة: ${lang}%0A` +
-                        `*سيتم إرفاق إثبات الشخصية الآن.*`;
+        if(!name || !seat) {
+            alert("الرجاء ملء اسم الطالب ورقم الجلوس على الأقل");
+            return;
+        }
+
+        const message = `*طلب جديد - خدمة وصال* 💙%0A` +
+                        `----------------------------%0A` +
+                        `👤 *اسم الطالب:* ${name}%0A` +
+                        `🔢 *رقم الجلوس:* ${seat}%0A` +
+                        `🏫 *المدرسة:* ${school}%0A` +
+                        `📅 *السنة:* ${year}%0A` +
+                        `📍 *الولاية:* ${state}%0A` +
+                        `📊 *النسبة:* ${percent}%0A` +
+                        `👩 *اسم الوالدة:* ${mother}%0A` +
+                        `🌐 *اللغة المطلوبة:* ${lang}%0A` +
+                        `----------------------------%0A` +
+                        `💰 *المبلغ المتفق عليه:* 150,000 جنيه%0A` +
+                        `*سأقوم بإرسال صورة الهوية الآن..*`;
 
         window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     }
 </script>
 </body>
-
 </html>
