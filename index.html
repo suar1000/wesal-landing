@@ -10,181 +10,183 @@
             --primary: #0056b3;
             --secondary: #00d2ff;
             --accent: #25d366;
-            --white: #ffffff;
-            --shadow: 0 10px 30px rgba(0,0,0,0.15);
+            --bg: #f8f9fa;
         }
 
         body { 
             font-family: 'Tajawal', sans-serif; 
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            background-attachment: fixed;
-            margin: 0; padding: 10px; color: #333; 
-            display: flex; flex-direction: column; align-items: center;
+            background-color: var(--bg);
+            margin: 0; padding: 0; color: #333; 
             min-height: 100vh;
         }
 
-        .container { 
-            max-width: 500px; width: 95%; background: var(--white); 
-            padding: 25px; border-radius: 25px; box-shadow: var(--shadow);
-            margin-top: 20px; margin-bottom: 20px;
+        /* الهيدر الثابت */
+        .main-header {
+            background: white; padding: 15px; text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .main-header img { max-width: 80px; border-radius: 10px; }
+
+        .container { max-width: 500px; margin: 20px auto; padding: 0 15px; }
+
+        /* شاشة الخدمات (الرئيسية) */
+        .services-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .service-card {
+            background: white; padding: 20px; border-radius: 20px;
+            display: flex; align-items: center; gap: 15px;
+            cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid transparent;
+        }
+        .service-card:hover { transform: translateY(-3px); border-color: var(--secondary); }
+        .service-icon { font-size: 30px; background: #f0f7ff; padding: 15px; border-radius: 15px; }
+        .service-info h3 { margin: 0; color: var(--primary); font-size: 18px; }
+        .service-info p { margin: 5px 0 0; color: #777; font-size: 13px; }
+
+        /* شاشات الخدمات (مخفية) */
+        .page { display: none; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+
+        .back-btn {
+            background: #eee; border: none; padding: 8px 15px; border-radius: 10px;
+            cursor: pointer; margin-bottom: 15px; font-family: 'Tajawal'; font-weight: bold;
         }
 
-        .header { text-align: center; margin-bottom: 20px; }
-        .header img { 
-            max-width: 110px; height: auto; border-radius: 15px; 
-            margin-bottom: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .header h2 { margin: 0; color: var(--primary); font-size: 22px; }
+        .form-container { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .form-container h2 { margin-top: 0; color: var(--primary); text-align: center; font-size: 20px; }
 
-        /* إحصائيات سريعة */
-        .stats-bar {
-            display: flex; justify-content: space-around;
-            background: #f0f7ff; padding: 10px; border-radius: 15px;
-            margin-bottom: 20px; border: 1px solid #d1e9ff;
-        }
-        .stat-item { text-align: center; }
-        .stat-num { display: block; font-weight: bold; color: var(--primary); font-size: 16px; }
-        .stat-text { font-size: 11px; color: #666; }
-
-        .services-nav { 
-            display: flex; gap: 5px; margin-bottom: 20px; 
-            background: #f0f2f5; padding: 5px; border-radius: 12px;
-        }
-        .nav-btn { 
-            flex: 1; padding: 10px 2px; border: none; border-radius: 10px; 
-            background: transparent; cursor: pointer; font-family: 'Tajawal'; 
-            font-weight: bold; transition: 0.3s; font-size: 12px; color: #555;
-        }
-        .nav-btn.active { background: var(--white); color: var(--primary); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-
-        .service-form { display: none; animation: fadeIn 0.4s ease; }
-        .service-form.active { display: block; }
-
-        .input-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
         input, select { 
-            width: 100%; padding: 10px; border: 2px solid #edf2f7; border-radius: 10px; 
-            box-sizing: border-box; font-family: 'Tajawal'; font-size: 14px;
+            width: 100%; padding: 12px; border: 2px solid #edf2f7; border-radius: 10px; 
+            box-sizing: border-box; font-family: 'Tajawal';
         }
 
-        .price-box { background: #fff5f5; color: #e74c3c; padding: 10px; border-radius: 10px; text-align: center; font-weight: bold; margin: 15px 0; font-size: 14px; }
+        .price-tag { background: #fff5f5; color: #e74c3c; padding: 10px; border-radius: 10px; text-align: center; font-weight: bold; margin: 15px 0; }
 
-        button.send-btn { 
-            width: 100%; padding: 15px; background: var(--accent); color: white; 
-            border: none; border-radius: 12px; font-size: 16px; font-weight: bold;
-            cursor: pointer; transition: 0.3s;
+        .submit-btn { 
+            width: 100%; padding: 16px; background: var(--accent); color: white; 
+            border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer;
         }
 
-        /* قسم آراء العملاء المحسن */
-        .testimonials-section { width: 95%; max-width: 500px; padding-bottom: 40px; }
-        .testimonials-section h3 { color: white; text-align: center; margin: 20px 0; font-size: 18px; }
-        
-        .testimonial-card {
-            background: rgba(255, 255, 255, 0.95); padding: 15px; 
-            border-radius: 15px; margin-bottom: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .testimonial-card p { margin: 0; font-size: 13px; color: #444; line-height: 1.5; }
-        .customer-info { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .customer-name { font-weight: bold; color: var(--primary); font-size: 12px; }
-        .stars { color: #ffc107; font-size: 10px; }
+        /* قسم الآراء في الأسفل */
+        .testimonials { margin-top: 30px; padding-bottom: 30px; }
+        .testimonials h4 { text-align: center; color: #555; }
+        .t-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; font-size: 13px; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
 
+<header class="main-header">
+    <img src="https://i.ibb.co/7xqxZ0hP/Wesal-Logo.png" alt="Wesal Travel">
+</header>
+
 <div class="container">
-    <div class="header">
-        <img src="https://i.ibb.co/7xqxZ0hP/Wesal-Logo.png" alt="Wesal Travel Logo">
-        <h2>Wesal Travel</h2>
-        <p>التميز في خدمات السفر والتعليم</p>
-    </div>
 
-    <div class="stats-bar">
-        <div class="stat-item"><span class="stat-num">+850</span><span class="stat-text">عميل راضٍ</span></div>
-        <div class="stat-item"><span class="stat-num">+400</span><span class="stat-text">شهادة مستخرجة</span></div>
-        <div class="stat-item"><span class="stat-num">24/7</span><span class="stat-text">دعم متواصل</span></div>
-    </div>
+    <div id="homePage" class="page active">
+        <h2 style="text-align: center; color: var(--primary);">مرحباً بك في وصال 💙</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 25px;">اختر الخدمة المطلوبة لنبدأ الإجراءات</p>
+        
+        <div class="services-grid">
+            <div class="service-card" onclick="openPage('studentPage')">
+                <div class="service-icon">🎓</div>
+                <div class="service-info">
+                    <h3>الشهادات السودانية</h3>
+                    <p>استخراج وتوثيق الشهادات بكل سهولة</p>
+                </div>
+            </div>
 
-    <div class="services-nav">
-        <button class="nav-btn active" onclick="showService('student', this)">🎓 الشهادات</button>
-        <button class="nav-btn" onclick="showService('flight', this)">✈️ الطيران</button>
-        <button class="nav-btn" onclick="showService('visa', this)">🌍 التأشيرات</button>
-    </div>
+            <div class="service-card" onclick="openPage('flightPage')">
+                <div class="service-icon">✈️</div>
+                <div class="service-info">
+                    <h3>حجز طيران</h3>
+                    <p>أفضل عروض الرحلات الدولية والداخلية</p>
+                </div>
+            </div>
 
-    <div id="student" class="service-form active">
-        <div class="input-group"><label>👤 اسم الطالب:</label><input type="text" id="std_name" placeholder="الاسم الكامل"></div>
-        <div style="display: flex; gap: 10px;">
-            <div class="input-group" style="flex: 1;"><label>🔢 رقم الجلوس:</label><input type="text" id="std_seat"></div>
-            <div class="input-group" style="flex: 1;"><label>📅 السنة:</label><input type="number" id="std_year" value="2024"></div>
+            <div class="service-card" onclick="openPage('visaPage')">
+                <div class="service-icon">🌍</div>
+                <div class="service-info">
+                    <h3>تأشيرات الدخول</h3>
+                    <p>إصدار تأشيرات الزيارة والعمل والإقامة</p>
+                </div>
+            </div>
         </div>
-        <div class="price-box">التكلفة: 150,000 جنيه</div>
-    </div>
 
-    <div id="flight" class="service-form">
-        <div class="input-group"><label>👤 اسم المسافر:</label><input type="text" id="fly_name"></div>
-        <div style="display: flex; gap: 10px;">
-            <div class="input-group" style="flex: 1;"><label>🛫 من:</label><input type="text" id="fly_from"></div>
-            <div class="input-group" style="flex: 1;"><label>🛬 إلى:</label><input type="text" id="fly_to"></div>
-        </div>
-    </div>
-
-    <div id="visa" class="service-form">
-        <div class="input-group"><label>👤 الاسم الكامل:</label><input type="text" id="visa_name"></div>
-        <div class="input-group"><label>🚩 الدولة المطلوبة:</label><input type="text" id="visa_country"></div>
-    </div>
-
-    <button class="send-btn" onclick="sendOrder()">✅ إرسال الطلب عبر واتساب</button>
-</div>
-
-<div class="testimonials-section">
-    <h3>آراء عملائنا 💙</h3>
-    
-    <div class="testimonial-card">
-        <p>"مصداقية عالية جداً، استخرجت شهادتي الجامعية ووصلتني في الموعد المحدد."</p>
-        <div class="customer-info">
-            <span class="customer-name">عمر الخضر</span>
-            <div class="stars">⭐⭐⭐⭐⭐</div>
+        <div class="testimonials">
+            <h4>آراء عملائنا 💬</h4>
+            <div class="t-card">"تعامل راقي وسرعة في الإنجاز" - <b>أحمد علي</b></div>
+            <div class="t-card">"أفضل وكالة تعاملت معها في حجز الطيران" - <b>منى محمد</b></div>
         </div>
     </div>
 
-    <div class="testimonial-card">
-        <p>"أسعار التذاكر عندهم ممتازة والرد سريع جداً على الواتساب."</p>
-        <div class="customer-info">
-            <span class="customer-name">فاطمة علي</span>
-            <div class="stars">⭐⭐⭐⭐⭐</div>
+    <div id="studentPage" class="page">
+        <button class="back-btn" onclick="openPage('homePage')">⬅️ رجوع</button>
+        <div class="form-container">
+            <h2>🎓 استخراج الشهادات</h2>
+            <div class="input-group"><label>👤 اسم الطالب:</label><input type="text" id="std_name"></div>
+            <div class="input-group"><label>🔢 رقم الجلوس:</label><input type="text" id="std_seat"></div>
+            <div class="input-group"><label>📅 سنة الامتحان:</label><input type="number" id="std_year" value="2024"></div>
+            <div class="price-tag">التكلفة: 150,000 جنيه</div>
+            <button class="submit-btn" onclick="sendToWA('student')">إرسال عبر واتساب</button>
         </div>
     </div>
 
-    <div class="testimonial-card">
-        <p>"التعامل مع وصال ترافيل مريح، وفروا علي تعب كتير في إجراءات الفيزا."</p>
-        <div class="customer-info">
-            <span class="customer-name">خالد إبراهيم</span>
-            <div class="stars">⭐⭐⭐⭐⭐</div>
+    <div id="flightPage" class="page">
+        <button class="back-btn" onclick="openPage('homePage')">⬅️ رجوع</button>
+        <div class="form-container">
+            <h2>✈️ حجز تذكرة طيران</h2>
+            <div class="input-group"><label>👤 اسم المسافر:</label><input type="text" id="fly_name"></div>
+            <div class="input-group"><label>🛫 من:</label><input type="text" id="fly_from"></div>
+            <div class="input-group"><label>🛬 إلى:</label><input type="text" id="fly_to"></div>
+            <div class="input-group"><label>📅 تاريخ السفر:</label><input type="date" id="fly_date"></div>
+            <button class="submit-btn" onclick="sendToWA('flight')">إرسال عبر واتساب</button>
         </div>
     </div>
+
+    <div id="visaPage" class="page">
+        <button class="back-btn" onclick="openPage('homePage')">⬅️ رجوع</button>
+        <div class="form-container">
+            <h2>🌍 إصدار تأشيرة</h2>
+            <div class="input-group"><label>👤 الاسم الكامل:</label><input type="text" id="visa_name"></div>
+            <div class="input-group"><label>🚩 الدولة المطلوبة:</label><input type="text" id="visa_country"></div>
+            <div class="input-group">
+                <label>📄 نوع التأشيرة:</label>
+                <select id="visa_type"><option>زيارة</option><option>عمل</option><option>إقامة</option></select>
+            </div>
+            <button class="submit-btn" onclick="sendToWA('visa')">إرسال عبر واتساب</button>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    let activeService = 'student';
-    function showService(id, btn) {
-        activeService = id;
-        document.querySelectorAll('.service-form').forEach(f => f.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
+    function openPage(pageId) {
+        // إخفاء كل الصفحات
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        // إظهار الصفحة المطلوبة
+        document.getElementById(pageId).classList.add('active');
+        // الصعود لأعلى الصفحة
+        window.scrollTo(0, 0);
     }
 
-    function sendOrder() {
+    function sendToWA(type) {
         const phone = "201500346550";
-        let message = `*طلب جديد - Wesal Travel*%0A`;
-        if(activeService === 'student') message += `🎓 شهادة لـ: ${document.getElementById('std_name').value}`;
-        else if(activeService === 'flight') message += `✈️ طيران لـ: ${document.getElementById('fly_name').value}`;
-        else message += `🌍 تأشيرة لـ: ${document.getElementById('visa_name').value}`;
+        let text = `*طلب جديد من Wesal Travel* 💙%0A`;
         
-        window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+        if(type === 'student') {
+            text += `🎓 *الخدمة:* شهادة سودانية%0A👤 الاسم: ${document.getElementById('std_name').value}%0A🔢 الجلوس: ${document.getElementById('std_seat').value}%0A📅 السنة: ${document.getElementById('std_year').value}`;
+        } else if(type === 'flight') {
+            text += `✈️ *الخدمة:* حجز طيران%0A👤 المسافر: ${document.getElementById('fly_name').value}%0A🛫 من: ${document.getElementById('fly_from').value}%0A🛬 إلى: ${document.getElementById('fly_to').value}%0A📅 التاريخ: ${document.getElementById('fly_date').value}`;
+        } else if(type === 'visa') {
+            text += `🌍 *الخدمة:* تأشيرة%0A👤 الاسم: ${document.getElementById('visa_name').value}%0A🚩 الدولة: ${document.getElementById('visa_country').value}%0A📄 النوع: ${document.getElementById('visa_type').value}`;
+        }
+
+        window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
     }
 </script>
+
 </body>
 </html>
