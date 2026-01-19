@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="نموذج العمل التجاري - Business Model Canvas باللغة العربية">
+    <meta name="keywords" content="نموذج العمل التجاري, Business Model Canvas, ريادة الأعمال">
+    <meta name="author" content="Your Name">
     <title>نموذج العمل التجاري - Business Model Canvas</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
     <style>
         * {
             margin: 0;
@@ -228,13 +233,45 @@
             margin-top: 8px;
             font-style: italic;
         }
+
+        .status-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .status-message.show {
+            opacity: 1;
+        }
+
+        .status-message.success {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-message.error {
+            background: #ef4444;
+            color: white;
+        }
         
         @media print {
             body {
                 background: white;
                 padding: 0;
             }
-            .header, .controls, .footer {
+            .header {
+                background: white;
+                color: #667eea;
+            }
+            .controls, .footer, .status-message {
                 display: none;
             }
             .container {
@@ -242,9 +279,11 @@
             }
             .section {
                 break-inside: avoid;
+                page-break-inside: avoid;
             }
             textarea {
                 border: 1px solid #ddd;
+                min-height: 150px;
             }
         }
         
@@ -260,9 +299,34 @@
                 grid-row: auto;
             }
         }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 1.8em;
+            }
+            .canvas {
+                padding: 15px;
+            }
+            .section {
+                padding: 15px;
+                min-height: 200px;
+            }
+            .controls {
+                justify-content: center;
+            }
+            .btn {
+                flex: 1 1 calc(50% - 5px);
+                min-width: 140px;
+            }
+        }
     </style>
 </head>
 <body>
+    <div id="statusMessage" class="status-message"></div>
+
     <div class="container">
         <div class="header">
             <h1>📊 نموذج العمل التجاري</h1>
@@ -471,18 +535,39 @@
         
         <div class="footer">
             <p>💡 نصيحة: احفظ عملك بانتظام | راجع النموذج كل 3-6 أشهر | اختبر افتراضاتك مع العملاء الحقيقيين</p>
-            <p style="margin-top: 10px; font-size: 0.9em;">تم التصميم بواسطة Claude | جميع الحقوق محفوظة © 2026</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Business Model Canvas © 2026</p>
         </div>
     </div>
 
     <script>
-        // حفظ البيانات تلقائياً كل 30 ثانية
-        setInterval(() => {
-            autoSave();
-        }, 30000);
+        // تخزين البيانات في الذاكرة بدلاً من localStorage
+        let canvasData = {
+            projectName: '',
+            partnerships: '',
+            activities: '',
+            resources: '',
+            value: '',
+            relationships: '',
+            channels: '',
+            segments: '',
+            revenue: '',
+            costs: '',
+            notes: ''
+        };
 
-        function autoSave() {
-            const data = {
+        // دالة لعرض رسائل الحالة
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type} show`;
+            setTimeout(() => {
+                statusEl.classList.remove('show');
+            }, 3000);
+        }
+
+        // جمع البيانات من النموذج
+        function collectData() {
+            return {
                 projectName: document.getElementById('projectName').value,
                 partnerships: document.getElementById('partnerships').value,
                 activities: document.getElementById('activities').value,
@@ -494,142 +579,175 @@
                 revenue: document.getElementById('revenue').value,
                 costs: document.getElementById('costs').value,
                 notes: document.getElementById('notes').value,
-                timestamp: new Date().toISOString()
-            };
-            localStorage.setItem('businessCanvas_autosave', JSON.stringify(data));
-        }
-
-        function saveCanvas() {
-            const projectName = document.getElementById('projectName').value || 'مشروع_جديد';
-            const data = {
-                projectName: projectName,
-                partnerships: document.getElementById('partnerships').value,
-                activities: document.getElementById('activities').value,
-                resources: document.getElementById('resources').value,
-                value: document.getElementById('value').value,
-                relationships: document.getElementById('relationships').value,
-                channels: document.getElementById('channels').value,
-                segments: document.getElementById('segments').value,
-                revenue: document.getElementById('revenue').value,
-                costs: document.getElementById('costs').value,
-                notes: document.getElementById('notes').value,
+                timestamp: new Date().toISOString(),
                 savedDate: new Date().toLocaleString('ar-SA')
             };
-            
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${projectName}_${new Date().getTime()}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
-            
-            alert('✅ تم حفظ المشروع بنجاح!');
         }
 
+        // تحميل البيانات إلى النموذج
+        function populateForm(data) {
+            document.getElementById('projectName').value = data.projectName || '';
+            document.getElementById('partnerships').value = data.partnerships || '';
+            document.getElementById('activities').value = data.activities || '';
+            document.getElementById('resources').value = data.resources || '';
+            document.getElementById('value').value = data.value || '';
+            document.getElementById('relationships').value = data.relationships || '';
+            document.getElementById('channels').value = data.channels || '';
+            document.getElementById('segments').value = data.segments || '';
+            document.getElementById('revenue').value = data.revenue || '';
+            document.getElementById('costs').value = data.costs || '';
+            document.getElementById('notes').value = data.notes || '';
+        }
+
+        // حفظ النموذج كملف
+        function saveCanvas() {
+            try {
+                const data = collectData();
+                const projectName = data.projectName || 'مشروع_جديد';
+                
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json;charset=utf-8'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${projectName}_${new Date().getTime()}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showStatus('✅ تم حفظ المشروع بنجاح!', 'success');
+            } catch (error) {
+                console.error('Error saving canvas:', error);
+                showStatus('❌ حدث خطأ أثناء الحفظ', 'error');
+            }
+        }
+
+        // تحميل النموذج من ملف
         function loadCanvas() {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = 'application/json';
             input.onchange = e => {
                 const file = e.target.files[0];
+                if (!file) return;
+                
                 const reader = new FileReader();
                 reader.onload = event => {
                     try {
                         const data = JSON.parse(event.target.result);
-                        document.getElementById('projectName').value = data.projectName || '';
-                        document.getElementById('partnerships').value = data.partnerships || '';
-                        document.getElementById('activities').value = data.activities || '';
-                        document.getElementById('resources').value = data.resources || '';
-                        document.getElementById('value').value = data.value || '';
-                        document.getElementById('relationships').value = data.relationships || '';
-                        document.getElementById('channels').value = data.channels || '';
-                        document.getElementById('segments').value = data.segments || '';
-                        document.getElementById('revenue').value = data.revenue || '';
-                        document.getElementById('costs').value = data.costs || '';
-                        document.getElementById('notes').value = data.notes || '';
-                        alert('✅ تم تحميل المشروع بنجاح!');
+                        populateForm(data);
+                        canvasData = data;
+                        showStatus('✅ تم تحميل المشروع بنجاح!', 'success');
                     } catch (error) {
-                        alert('❌ خطأ في قراءة الملف. تأكد من أنه ملف صحيح.');
+                        console.error('Error loading canvas:', error);
+                        showStatus('❌ خطأ في قراءة الملف. تأكد من أنه ملف صحيح.', 'error');
                     }
+                };
+                reader.onerror = () => {
+                    showStatus('❌ فشل قراءة الملف', 'error');
                 };
                 reader.readAsText(file);
             };
             input.click();
         }
 
+        // مسح جميع البيانات
         function clearCanvas() {
             if (confirm('⚠️ هل أنت متأكد من مسح جميع البيانات؟ لن تتمكن من استرجاعها!')) {
-                document.getElementById('projectName').value = '';
-                document.getElementById('partnerships').value = '';
-                document.getElementById('activities').value = '';
-                document.getElementById('resources').value = '';
-                document.getElementById('value').value = '';
-                document.getElementById('relationships').value = '';
-                document.getElementById('channels').value = '';
-                document.getElementById('segments').value = '';
-                document.getElementById('revenue').value = '';
-                document.getElementById('costs').value = '';
-                document.getElementById('notes').value = '';
-                alert('✅ تم مسح جميع البيانات');
+                const emptyData = {
+                    projectName: '',
+                    partnerships: '',
+                    activities: '',
+                    resources: '',
+                    value: '',
+                    relationships: '',
+                    channels: '',
+                    segments: '',
+                    revenue: '',
+                    costs: '',
+                    notes: ''
+                };
+                populateForm(emptyData);
+                canvasData = emptyData;
+                showStatus('✅ تم مسح جميع البيانات', 'success');
             }
         }
 
+        // طباعة النموذج
         function printCanvas() {
             window.print();
         }
 
+        // تصدير كـ JSON
         function exportJSON() {
-            const data = {
-                projectName: document.getElementById('projectName').value,
-                canvas: {
-                    partnerships: document.getElementById('partnerships').value,
-                    activities: document.getElementById('activities').value,
-                    resources: document.getElementById('resources').value,
-                    valueProposition: document.getElementById('value').value,
-                    customerRelationships: document.getElementById('relationships').value,
-                    channels: document.getElementById('channels').value,
-                    customerSegments: document.getElementById('segments').value,
-                    revenueStreams: document.getElementById('revenue').value,
-                    costStructure: document.getElementById('costs').value,
-                    notes: document.getElementById('notes').value
-                },
-                metadata: {
-                    version: '1.0',
-                    exportDate: new Date().toISOString(),
-                    locale: 'ar-SA'
-                }
-            };
-            
-            console.log('Exported Canvas:', data);
-            alert('✅ تم تصدير البيانات! افتح Console للمطورين لرؤية البيانات');
+            try {
+                const data = {
+                    projectName: document.getElementById('projectName').value,
+                    canvas: {
+                        partnerships: document.getElementById('partnerships').value,
+                        activities: document.getElementById('activities').value,
+                        resources: document.getElementById('resources').value,
+                        valueProposition: document.getElementById('value').value,
+                        customerRelationships: document.getElementById('relationships').value,
+                        channels: document.getElementById('channels').value,
+                        customerSegments: document.getElementById('segments').value,
+                        revenueStreams: document.getElementById('revenue').value,
+                        costStructure: document.getElementById('costs').value,
+                        notes: document.getElementById('notes').value
+                    },
+                    metadata: {
+                        version: '1.0',
+                        exportDate: new Date().toISOString(),
+                        locale: 'ar-SA'
+                    }
+                };
+                
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json;charset=utf-8'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${data.projectName || 'canvas'}_export_${new Date().getTime()}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showStatus('✅ تم تصدير البيانات بنجاح!', 'success');
+            } catch (error) {
+                console.error('Error exporting JSON:', error);
+                showStatus('❌ حدث خطأ أثناء التصدير', 'error');
+            }
         }
 
-        // تحميل البيانات المحفوظة تلقائياً عند فتح الصفحة
-        window.addEventListener('load', () => {
-            const autosaved = localStorage.getItem('businessCanvas_autosave');
-            if (autosaved) {
-                try {
-                    const data = JSON.parse(autosaved);
-                    if (confirm('🔄 تم العثور على بيانات محفوظة تلقائياً. هل تريد استعادتها؟')) {
-                        document.getElementById('projectName').value = data.projectName || '';
-                        document.getElementById('partnerships').value = data.partnerships || '';
-                        document.getElementById('activities').value = data.activities || '';
-                        document.getElementById('resources').value = data.resources || '';
-                        document.getElementById('value').value = data.value || '';
-                        document.getElementById('relationships').value = data.relationships || '';
-                        document.getElementById('channels').value = data.channels || '';
-                        document.getElementById('segments').value = data.segments || '';
-                        document.getElementById('revenue').value = data.revenue || '';
-                        document.getElementById('costs').value = data.costs || '';
-                        document.getElementById('notes').value = data.notes || '';
-                    }
-                } catch (error) {
-                    console.error('Error loading autosaved data:', error);
-                }
+        // حفظ تلقائي في الذاكرة كل دقيقة
+        setInterval(() => {
+            canvasData = collectData();
+        }, 60000);
+
+        // حفظ البيانات عند مغادرة الصفحة (اختياري)
+        window.addEventListener('beforeunload', (e) => {
+            const currentData = collectData();
+            const hasData = Object.values(currentData).some(val => 
+                typeof val === 'string' && val.trim().length > 0
+            );
+            
+            if (hasData) {
+                e.preventDefault();
+                e.returnValue = 'لديك بيانات غير محفوظة. هل تريد المغادرة؟';
             }
         });
-    </script>
+
+        // معالجة الأخطاء العامة
+        window.addEventListener('error', (e) => {
+            console.error('Application error:', e.error);
+        });
+
+        // التحقق من دعم المتصفح
+        if (!window.Blob || !window.FileReader) {
+            showStatus('⚠️ متصفحك قد لا يدعم جميع الميزات', 'error');
+        }
+        </script>
 </body>
-                                                                    </html>
+</html>
