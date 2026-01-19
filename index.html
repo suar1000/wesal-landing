@@ -1,800 +1,635 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wesal Travel | وكالة وصال للخدمات المتعددة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>نموذج العمل التجاري - Business Model Canvas</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        :root {
-            --primary: #0056b3;
-            --primary-dark: #003d82;
-            --secondary: #00d2ff;
-            --accent: #25d366;
-            --accent-hover: #1fb855;
-            --bg: #f5f7fa;
-            --card-bg: #ffffff;
-            --text-dark: #1a202c;
-            --text-light: #718096;
-            --border: #e2e8f0;
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        body { 
-            font-family: 'Tajawal', sans-serif; 
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-            color: var(--text-dark);
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            line-height: 1.6;
+            padding: 20px;
         }
-
-        /* الهيدر الاحترافي */
-        .main-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            padding: 20px 15px;
-            box-shadow: var(--shadow-lg);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-content {
-            max-width: 500px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-section img {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .brand-text {
-            color: white;
-        }
-
-        .brand-text h1 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-
-        .brand-text p {
-            font-size: 12px;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-
-        .contact-icon {
-            background: rgba(255, 255, 255, 0.15);
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .contact-icon:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: scale(1.05);
-        }
-
+        
         .container {
-            max-width: 500px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 25px 15px;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            text-align: center;
-            margin-bottom: 30px;
-            animation: fadeInDown 0.6s ease;
-        }
-
-        .hero-section h2 {
-            font-size: 28px;
-            color: var(--text-dark);
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .hero-section p {
-            color: var(--text-light);
-            font-size: 15px;
-            font-weight: 400;
-        }
-
-        /* بطاقات الخدمات المحسنة */
-        .services-grid {
-            display: grid;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .service-card {
-            background: var(--card-bg);
-            padding: 25px;
+            background: white;
             border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-sm);
-            border: 2px solid transparent;
-            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
         }
-
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
         }
-
-        .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary);
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-
-        .service-card:hover::before {
-            opacity: 0.03;
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
         }
-
-        .service-icon {
-            font-size: 40px;
-            background: linear-gradient(135deg, #f0f7ff 0%, #e6f2ff 100%);
-            padding: 20px;
-            border-radius: 18px;
-            min-width: 70px;
-            height: 70px;
+        
+        .project-info {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .project-name {
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
+            gap: 15px;
+            margin-bottom: 15px;
         }
-
-        .service-card:hover .service-icon {
-            transform: scale(1.1) rotate(5deg);
+        
+        .project-name label {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+            min-width: 120px;
         }
-
-        .service-info {
+        
+        .project-name input {
             flex: 1;
-            position: relative;
-            z-index: 1;
-        }
-
-        .service-info h3 {
-            font-size: 19px;
-            color: var(--primary);
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .service-info p {
-            color: var(--text-light);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .service-arrow {
-            font-size: 24px;
-            color: var(--text-light);
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .service-card:hover .service-arrow {
-            color: var(--primary);
-            transform: translateX(-5px);
-        }
-
-        /* صفحات الخدمات */
-        .page {
-            display: none;
-            animation: slideIn 0.5s ease;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .back-btn {
-            background: var(--card-bg);
-            border: 2px solid var(--border);
             padding: 12px 20px;
-            border-radius: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .project-name input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
             cursor: pointer;
-            font-family: 'Tajawal';
-            font-weight: 600;
-            font-size: 15px;
-            color: var(--text-dark);
-            margin-bottom: 20px;
-            display: inline-flex;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        
+        .btn-info {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+        
+        .canvas {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: auto auto;
+            gap: 2px;
+            background: #ddd;
+            padding: 30px;
+        }
+        
+        .section {
+            background: white;
+            padding: 20px;
+            min-height: 250px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .section:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid;
+            display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-sm);
         }
-
-        .back-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateX(5px);
+        
+        .icon {
+            font-size: 1.3em;
         }
-
-        .form-container {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 25px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .form-header h2 {
-            font-size: 24px;
-            color: var(--primary);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .form-header p {
-            color: var(--text-light);
-            font-size: 14px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 15px;
-            color: var(--text-dark);
-        }
-
-        input, select {
+        
+        textarea {
             width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            font-family: 'Tajawal';
-            font-size: 15px;
-            transition: all 0.3s ease;
-            background: #fafafa;
+            min-height: 180px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.95em;
+            resize: vertical;
+            font-family: inherit;
+            transition: all 0.3s;
         }
-
-        input:focus, select:focus {
+        
+        textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-
-        .price-tag {
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
-            color: #e53e3e;
-            padding: 16px;
-            border-radius: 15px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 18px;
-            margin: 20px 0;
-            border: 2px solid #fed7d7;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        /* قسم الآراء المحسن */
-        .testimonials {
-            margin-top: 40px;
-            padding: 30px 0;
-        }
-
-        .testimonials-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .testimonials-header h4 {
-            font-size: 22px;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .testimonials-header p {
-            color: var(--text-light);
-            font-size: 14px;
-        }
-
-        .t-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 18px;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
-        }
-
-        .t-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .t-card-content {
-            display: flex;
-            gap: 15px;
-            align-items: start;
-        }
-
-        .t-avatar {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .t-text {
-            flex: 1;
-        }
-
-        .t-text p {
-            color: var(--text-dark);
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 8px;
-        }
-
-        .t-author {
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .stars {
-            color: #fbbf24;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        /* الفوتر */
+        
+        .section-1 { grid-column: 1; grid-row: 1 / 3; }
+        .section-2 { grid-column: 2; grid-row: 1; }
+        .section-3 { grid-column: 2; grid-row: 2; }
+        .section-4 { grid-column: 3; grid-row: 1; }
+        .section-5 { grid-column: 3; grid-row: 2; }
+        .section-6 { grid-column: 4; grid-row: 1; }
+        .section-7 { grid-column: 4; grid-row: 2; }
+        .section-8 { grid-column: 5; grid-row: 1 / 3; }
+        .section-9 { grid-column: 1 / 6; grid-row: 3; }
+        .section-10 { grid-column: 1 / 6; grid-row: 4; }
+        
+        .color-1 .section-title { border-color: #ef4444; color: #ef4444; }
+        .color-2 .section-title { border-color: #f59e0b; color: #f59e0b; }
+        .color-3 .section-title { border-color: #10b981; color: #10b981; }
+        .color-4 .section-title { border-color: #3b82f6; color: #3b82f6; }
+        .color-5 .section-title { border-color: #8b5cf6; color: #8b5cf6; }
+        .color-6 .section-title { border-color: #ec4899; color: #ec4899; }
+        .color-7 .section-title { border-color: #14b8a6; color: #14b8a6; }
+        .color-8 .section-title { border-color: #f97316; color: #f97316; }
+        .color-9 .section-title { border-color: #6366f1; color: #6366f1; }
+        .color-10 .section-title { border-color: #dc2626; color: #dc2626; }
+        
         .footer {
-            background: var(--card-bg);
-            padding: 25px;
+            background: #f8f9fa;
+            padding: 20px 30px;
             text-align: center;
-            margin-top: 40px;
-            border-radius: 20px;
-            box-shadow: var(--shadow-sm);
+            color: #6b7280;
+            border-top: 3px solid #667eea;
         }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 15px;
+        
+        .helper-text {
+            font-size: 0.85em;
+            color: #6b7280;
+            margin-top: 8px;
+            font-style: italic;
         }
-
-        .footer-link {
-            color: var(--text-light);
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-link:hover {
-            color: var(--primary);
-        }
-
-        .footer p {
-            color: var(--text-light);
-            font-size: 13px;
-        }
-
-        /* الأنيميشن */
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            .header, .controls, .footer {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .section {
+                break-inside: avoid;
+            }
+            textarea {
+                border: 1px solid #ddd;
             }
         }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
+        
+        @media (max-width: 1200px) {
+            .canvas {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
             }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* تحسينات الموبايل */
-        @media (max-width: 480px) {
-            .hero-section h2 {
-                font-size: 24px;
-            }
-
-            .service-card {
-                padding: 20px;
-            }
-
-            .form-container {
-                padding: 25px 20px;
+            .section-1, .section-2, .section-3, .section-4, 
+            .section-5, .section-6, .section-7, .section-8,
+            .section-9, .section-10 {
+                grid-column: 1;
+                grid-row: auto;
             }
         }
     </style>
 </head>
 <body>
-
-<header class="main-header">
-    <div class="header-content">
-        <div class="logo-section">
-            <img src="https://i.ibb.co/7xqxZ0hP/Wesal-Logo.png" alt="Wesal Travel">
-            <div class="brand-text">
-                <h1>وصال</h1>
-                <p>رحلتك تبدأ معنا</p>
-            </div>
-        </div>
-        <div class="contact-icon" onclick="directCall()">📞</div>
-    </div>
-</header>
-
-<div class="container">
-
-    <div id="homePage" class="page active">
-        <div class="hero-section">
-            <h2>مرحباً بك في وصال 💙</h2>
-            <p>نقدم لك أفضل الخدمات بأسرع وقت وأفضل الأسعار</p>
+    <div class="container">
+        <div class="header">
+            <h1>📊 نموذج العمل التجاري</h1>
+            <p>Business Model Canvas - ابنِ مشروعك على ورقة واحدة</p>
         </div>
         
-        <div class="services-grid">
-            <div class="service-card" onclick="openPage('studentPage')">
-                <div class="service-icon">🎓</div>
-                <div class="service-info">
-                    <h3>الشهادات السودانية</h3>
-                    <p>استخراج وتوثيق الشهادات الدراسية بكل سهولة وسرعة</p>
-                </div>
-                <span class="service-arrow">←</span>
+        <div class="project-info">
+            <div class="project-name">
+                <label>📌 اسم المشروع:</label>
+                <input type="text" id="projectName" placeholder="أدخل اسم مشروعك هنا..." />
             </div>
-
-            <div class="service-card" onclick="openPage('flightPage')">
-                <div class="service-icon">✈️</div>
-                <div class="service-info">
-                    <h3>حجز طيران</h3>
-                    <p>أفضل عروض الرحلات الدولية والداخلية بأسعار منافسة</p>
-                </div>
-                <span class="service-arrow">←</span>
-            </div>
-
-            <div class="service-card" onclick="openPage('visaPage')">
-                <div class="service-icon">🌍</div>
-                <div class="service-info">
-                    <h3>تأشيرات الدخول</h3>
-                    <p>إصدار تأشيرات الزيارة والعمل والإقامة لجميع الدول</p>
-                </div>
-                <span class="service-arrow">←</span>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="saveCanvas()">💾 حفظ المشروع</button>
+                <button class="btn btn-success" onclick="loadCanvas()">📂 تحميل مشروع</button>
+                <button class="btn btn-danger" onclick="clearCanvas()">🗑️ مسح الكل</button>
+                <button class="btn btn-info" onclick="printCanvas()">🖨️ طباعة</button>
+                <button class="btn btn-primary" onclick="exportJSON()">📥 تصدير JSON</button>
             </div>
         </div>
+        
+        <div class="canvas">
+            <div class="section section-1 color-1">
+                <div class="section-title">
+                    <span class="icon">🤝</span>
+                    الشراكات الرئيسية
+                </div>
+                <textarea id="partnerships" placeholder="من هم شركاؤك الأساسيون؟
+• الموردون
+• الشركاء الاستراتيجيون
+• التحالفات
+• الموزعون
 
-        <div class="testimonials">
-            <div class="testimonials-header">
-                <h4>آراء عملائنا 💬</h4>
-                <p>ثقة عملائنا هي أساس نجاحنا</p>
+مثال:
+- شركات الشحن
+- موردو المواد الخام
+- شركاء التكنولوجيا"></textarea>
+                <div class="helper-text">💡 اذكر الشركاء الذين لا يمكن الاستغناء عنهم</div>
             </div>
             
-            <div class="t-card">
-                <div class="t-card-content">
-                    <div class="t-avatar">أ</div>
-                    <div class="t-text">
-                        <div class="stars">⭐⭐⭐⭐⭐</div>
-                        <p>"تعامل راقي جداً وسرعة في الإنجاز. حصلت على شهادتي في أسرع وقت ممكن"</p>
-                        <div class="t-author">أحمد علي محمد</div>
-                    </div>
+            <div class="section section-2 color-2">
+                <div class="section-title">
+                    <span class="icon">⚡</span>
+                    الأنشطة الرئيسية
                 </div>
-            </div>
+                <textarea id="activities" placeholder="ما أهم الأنشطة لنجاح عملك؟
+• الإنتاج
+• التسويق
+• التطوير
+• الخدمات
 
-            <div class="t-card">
-                <div class="t-card-content">
-                    <div class="t-avatar">م</div>
-                    <div class="t-text">
-                        <div class="stars">⭐⭐⭐⭐⭐</div>
-                        <p>"أفضل وكالة تعاملت معها في حجز الطيران. أسعار ممتازة وخدمة احترافية"</p>
-                        <div class="t-author">منى محمد أحمد</div>
-                    </div>
-                </div>
+مثال:
+- تطوير المنتج
+- إدارة المخزون
+- خدمة العملاء"></textarea>
+                <div class="helper-text">💡 ركز على الأنشطة الحاسمة فقط</div>
             </div>
-
-            <div class="t-card">
-                <div class="t-card-content">
-                    <div class="t-avatar">ك</div>
-                    <div class="t-text">
-                        <div class="stars">⭐⭐⭐⭐⭐</div>
-                        <p>"ساعدوني في استخراج تأشيرة العمل بكل سهولة. شكراً وصال"</p>
-                        <div class="t-author">كمال عبدالله</div>
-                    </div>
+            
+            <div class="section section-3 color-3">
+                <div class="section-title">
+                    <span class="icon">🎯</span>
+                    الموارد الرئيسية
                 </div>
+                <textarea id="resources" placeholder="ما الموارد التي تحتاجها؟
+• موارد مادية (معدات، مباني)
+• موارد فكرية (براءات، علامة تجارية)
+• موارد بشرية (موظفون، خبراء)
+• موارد مالية (رأس مال)
+
+مثال:
+- فريق تطوير
+- مصنع إنتاج
+- برامج متخصصة"></textarea>
+                <div class="helper-text">💡 اذكر الموارد الأساسية لتشغيل المشروع</div>
+            </div>
+            
+            <div class="section section-4 color-4">
+                <div class="section-title">
+                    <span class="icon">💎</span>
+                    عروض القيمة
+                </div>
+                <textarea id="value" placeholder="ما الذي يميز منتجك/خدمتك؟
+• ما المشكلة التي تحلها؟
+• لماذا يختارك العميل؟
+• ما فوائدك الفريدة؟
+
+مثال:
+- توصيل خلال ساعة
+- جودة عالية بسعر منافس
+- خدمة مخصصة لكل عميل"></textarea>
+                <div class="helper-text">💡 هذا هو قلب نموذج عملك!</div>
+            </div>
+            
+            <div class="section section-5 color-5">
+                <div class="section-title">
+                    <span class="icon">💬</span>
+                    علاقات العملاء
+                </div>
+                <textarea id="relationships" placeholder="كيف تبني علاقة مع عملائك؟
+• خدمة شخصية
+• خدمة ذاتية
+• مجتمعات
+• برامج ولاء
+
+مثال:
+- دعم فني 24/7
+- نقاط ومكافآت
+- تطبيق جوال
+- مجموعات حصرية"></textarea>
+                <div class="helper-text">💡 كيف تحافظ على عملائك؟</div>
+            </div>
+            
+            <div class="section section-6 color-6">
+                <div class="section-title">
+                    <span class="icon">📢</span>
+                    القنوات
+                </div>
+                <textarea id="channels" placeholder="كيف تصل لعملائك؟
+• قنوات البيع
+• قنوات التوزيع
+• قنوات التواصل
+• قنوات ما بعد البيع
+
+مثال:
+- المتجر الإلكتروني
+- وسائل التواصل الاجتماعي
+- تطبيق الجوال
+- متاجر التجزئة"></textarea>
+                <div class="helper-text">💡 كيف يعرفك العميل ويشتري منك؟</div>
+            </div>
+            
+            <div class="section section-7 color-7">
+                <div class="section-title">
+                    <span class="icon">👥</span>
+                    شرائح العملاء
+                </div>
+                <textarea id="segments" placeholder="من هم عملاؤك المستهدفون؟
+• الفئة العمرية
+• الموقع الجغرافي
+• السلوك الشرائي
+• الاحتياجات
+
+مثال:
+- شباب 18-35 سنة
+- أصحاب الشركات الصغيرة
+- عائلات في المدن الكبرى
+- محترفون يبحثون عن الجودة"></textarea>
+                <div class="helper-text">💡 كن محدداً في وصف عملائك</div>
+            </div>
+            
+            <div class="section section-8 color-8">
+                <div class="section-title">
+                    <span class="icon">💰</span>
+                    مصادر الإيرادات
+                </div>
+                <textarea id="revenue" placeholder="كيف تحقق الدخل؟
+• بيع المنتجات
+• رسوم الاشتراك
+• الإعلانات
+• العمولات
+• الإيجار
+
+مثال:
+- اشتراك شهري 50 ريال
+- نسبة 15% من كل معاملة
+- بيع المنتجات بهامش 40%
+- إعلانات مدفوعة"></textarea>
+                <div class="helper-text">💡 حدد الأسعار والنماذج بوضوح</div>
+            </div>
+            
+            <div class="section section-9 color-9">
+                <div class="section-title">
+                    <span class="icon">💸</span>
+                    هيكل التكاليف
+                </div>
+                <textarea id="costs" placeholder="ما هي تكاليفك الأساسية؟
+• تكاليف ثابتة (رواتب، إيجار)
+• تكاليف متغيرة (مواد خام، عمولات)
+• تكاليف التشغيل
+
+مثال:
+- رواتب الموظفين: 30,000 ريال/شهر
+- إيجار المكتب: 10,000 ريال/شهر
+- تسويق: 15,000 ريال/شهر
+- تكاليف إنتاج: 25 ريال/وحدة"></textarea>
+                <div class="helper-text">💡 قدّر التكاليف بدقة - لا تقلل من شأنها!</div>
+            </div>
+            
+            <div class="section section-10 color-10">
+                <div class="section-title">
+                    <span class="icon">📝</span>
+                    ملاحظات وأفكار إضافية
+                </div>
+                <textarea id="notes" placeholder="أضف أي ملاحظات أو أفكار:
+• الميزة التنافسية
+• التحديات المتوقعة
+• خطط التوسع المستقبلية
+• أفكار للتطوير
+
+مثال:
+- البدء بمدينة واحدة ثم التوسع
+- التركيز على جودة الخدمة في البداية
+- بناء قاعدة عملاء مخلصين قبل التوسع"></textarea>
+                <div class="helper-text">💡 استخدم هذا المكان لتوثيق أفكارك</div>
             </div>
         </div>
-
+        
         <div class="footer">
-            <div class="footer-links">
-                <a href="#" class="footer-link">الشروط والأحكام</a>
-                <a href="#" class="footer-link">سياسة الخصوصية</a>
-                <a href="#" class="footer-link">اتصل بنا</a>
-            </div>
-            <p>© 2024 وصال للخدمات المتعددة. جميع الحقوق محفوظة.</p>
+            <p>💡 نصيحة: احفظ عملك بانتظام | راجع النموذج كل 3-6 أشهر | اختبر افتراضاتك مع العملاء الحقيقيين</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">تم التصميم بواسطة Claude | جميع الحقوق محفوظة © 2026</p>
         </div>
     </div>
 
-    <div id="studentPage" class="page">
-        <button class="back-btn" onclick="openPage('homePage')">⬅️ رجوع للرئيسية</button>
-        <div class="form-container">
-            <div class="form-header">
-                <h2>🎓 استخراج الشهادات</h2>
-                <p>املأ البيانات التالية وسنتواصل معك فوراً</p>
-            </div>
-            
-            <div class="input-group">
-                <label>👤 اسم الطالب الرباعي:</label>
-                <input type="text" id="std_name" placeholder="أدخل الاسم كاملاً">
-            </div>
-            
-            <div class="input-group">
-                <label>🔢 رقم الجلوس:</label>
-                <input type="text" id="std_seat" placeholder="مثال: 12345">
-            </div>
-            
-            <div class="input-group">
-                <label>📅 سنة الامتحان:</label>
-                <input type="number" id="std_year" value="2024" min="2000" max="2025">
-            </div>
-            
-            <div class="price-tag">💰 التكلفة: 150,000 جنيه سوداني</div>
-            
-            <button class="submit-btn" onclick="sendToWA('student')">
-                <span>إرسال الطلب عبر واتساب</span>
-                <span>📱</span>
-            </button>
-        </div>
-    </div>
+    <script>
+        // حفظ البيانات تلقائياً كل 30 ثانية
+        setInterval(() => {
+            autoSave();
+        }, 30000);
 
-    <div id="flightPage" class="page">
-        <button class="back-btn" onclick="openPage('homePage')">⬅️ رجوع للرئيسية</button>
-        <div class="form-container">
-            <div class="form-header">
-                <h2>✈️ حجز تذكرة طيران</h2>
-                <p>احصل على أفضل الأسعار لوجهتك</p>
-            </div>
-            
-            <div class="input-group">
-                <label>👤 اسم المسافر:</label>
-                <input type="text" id="fly_name" placeholder="كما يظهر في جواز السفر">
-            </div>
-            
-            <div class="input-group">
-                <label>🛫 المغادرة من:</label>
-                <input type="text" id="fly_from" placeholder="مثال: القاهرة">
-            </div>
-            
-            <div class="input-group">
-                <label>🛬 الوصول إلى:</label>
-                <input type="text" id="fly_to" placeholder="مثال: الخرطوم">
-            </div>
-            
-            <div class="input-group">
-                <label>📅 تاريخ السفر:</label>
-                <input type="date" id="fly_date">
-            </div>
-            
-            <button class="submit-btn" onclick="sendToWA('flight')">
-                <span>إرسال الطلب عبر واتساب</span>
-                <span>📱</span>
-            </button>
-        </div>
-    </div>
-
-    <div id="visaPage" class="page">
-        <button class="back-btn" onclick="openPage('homePage')">⬅️ رجوع للرئيسية</button>
-        <div class="form-container">
-            <div class="form-header">
-                <h2>🌍 إصدار تأشيرة</h2>
-                <p>نساعدك في الحصول على تأشيرتك بسهولة</p>
-            </div>
-            
-            <div class="input-group">
-                <label>👤 الاسم الكامل:</label>
-                <input type="text" id="visa_name" placeholder="كما يظهر في جواز السفر">
-            </div>
-            
-            <div class="input-group">
-                <label>🚩 الدولة المطلوبة:</label>
-                <input type="text" id="visa_country" placeholder="مثال: السعودية">
-            </div>
-            
-            <div class="input-group">
-                <label>📄 نوع التأشيرة:</label>
-                <select id="visa_type">
-                    <option>زيارة</option>
-                    <option>عمل</option>
-                    <option>إقامة</option>
-                    <option>سياحة</option>
-                    <option>دراسة</option>
-                </select>
-            </div>
-            
-            <button class="submit-btn" onclick="sendToWA('visa')">
-                <span>إرسال الطلب عبر واتساب</span>
-                <span>📱</span>
-            </button>
-        </div>
-    </div>
-
-</div>
-
-<script>
-    function openPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function sendToWA(type) {
-        const phone = "201500346550";
-        let text = `*✨ طلب جديد من Wesal Travel*%0A`;
-        text += `━━━━━━━━━━━━━━━━━━━━%0A%0A`;
-        
-        if(type === 'student') {
-            const name = document.getElementById('std_name').value;
-            const seat = document.getElementById('std_seat').value;
-            const year = document.getElementById('std_year').value;
-            
-            if(!name || !seat || !year) {
-                alert('⚠️ الرجاء ملء جميع الحقول');
-                return;
-            }
-            
-            text += `🎓 *الخدمة:* استخراج شهادة سودانية%0A%0A`;
-            text += `👤 *اسم الطالب:* ${name}%0A`;
-            text += `🔢 *رقم الجلوس:* ${seat}%0A`;
-            text += `📅 *سنة الامتحان:* ${year}%0A`;
-            text += `💰 *التكلفة:* 150,000 جنيه`;
-        } else if(type === 'flight') {
-            const name = document.getElementById('fly_name').value;
-            const from = document.getElementById('fly_from').value;
-            const to = document.getElementById('fly_to').value;
-            const date = document.getElementById('fly_date').value;
-            
-            if(!name || !from || !to || !date) {
-                alert('⚠️ الرجاء ملء جميع الحقول');
-                return;
-            }
-            
-            text += `✈️ *الخدمة:* حجز تذكرة طيران%0A%0A`;
-            text += `👤 *اسم المسافر:* ${name}%0A`;
-            text += `🛫 *المغادرة من:* ${from}%0A`;
-            text += `🛬 *الوصول إلى:* ${to}%0A`;
-            text += `📅 *تاريخ السفر:* ${date}`;
-        } else if(type === 'visa') {
-            const name = document.getElementById('visa_name').value;
-            const country = document.getElementById('visa_country').value;
-            const visaType = document.getElementById('visa_type').value;
-            
-            if(!name || !country) {
-                alert('⚠️ الرجاء ملء جميع الحقول');
-                return;
-            }
-            
-            text += `🌍 *الخدمة:* إصدار تأشيرة%0A%0A`;
-            text += `👤 *الاسم الكامل:* ${name}%0A`;
-            text += `🚩 *الدولة المطلوبة:* ${country}%0A`;
-            text += `📄 *نوع التأشيرة:* ${visaType}`;
+        function autoSave() {
+            const data = {
+                projectName: document.getElementById('projectName').value,
+                partnerships: document.getElementById('partnerships').value,
+                activities: document.getElementById('activities').value,
+                resources: document.getElementById('resources').value,
+                value: document.getElementById('value').value,
+                relationships: document.getElementById('relationships').value,
+                channels: document.getElementById('channels').value,
+                segments: document.getElementById('segments').value,
+                revenue: document.getElementById('revenue').value,
+                costs: document.getElementById('costs').value,
+                notes: document.getElementById('notes').value,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('businessCanvas_autosave', JSON.stringify(data));
         }
-        
-        text += `%0A%0A━━━━━━━━━━━━━━━━━━━━%0A`;
-        text += `🕒 *وقت الطلب:* ${new Date().toLocaleString('ar-EG')}`;
 
-        window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
-    }
+        function saveCanvas() {
+            const projectName = document.getElementById('projectName').value || 'مشروع_جديد';
+            const data = {
+                projectName: projectName,
+                partnerships: document.getElementById('partnerships').value,
+                activities: document.getElementById('activities').value,
+                resources: document.getElementById('resources').value,
+                value: document.getElementById('value').value,
+                relationships: document.getElementById('relationships').value,
+                channels: document.getElementById('channels').value,
+                segments: document.getElementById('segments').value,
+                revenue: document.getElementById('revenue').value,
+                costs: document.getElementById('costs').value,
+                notes: document.getElementById('notes').value,
+                savedDate: new Date().toLocaleString('ar-SA')
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${projectName}_${new Date().getTime()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            alert('✅ تم حفظ المشروع بنجاح!');
+        }
 
-    function directCall() {
-        window.open('tel:+201500346550', '_self');
-    }
+        function loadCanvas() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        document.getElementById('projectName').value = data.projectName || '';
+                        document.getElementById('partnerships').value = data.partnerships || '';
+                        document.getElementById('activities').value = data.activities || '';
+                        document.getElementById('resources').value = data.resources || '';
+                        document.getElementById('value').value = data.value || '';
+                        document.getElementById('relationships').value = data.relationships || '';
+                        document.getElementById('channels').value = data.channels || '';
+                        document.getElementById('segments').value = data.segments || '';
+                        document.getElementById('revenue').value = data.revenue || '';
+                        document.getElementById('costs').value = data.costs || '';
+                        document.getElementById('notes').value = data.notes || '';
+                        alert('✅ تم تحميل المشروع بنجاح!');
+                    } catch (error) {
+                        alert('❌ خطأ في قراءة الملف. تأكد من أنه ملف صحيح.');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
 
-    // Smooth scroll behavior
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if(target) {
-                target.scrollIntoView({ behavior: 'smooth' });
+        function clearCanvas() {
+            if (confirm('⚠️ هل أنت متأكد من مسح جميع البيانات؟ لن تتمكن من استرجاعها!')) {
+                document.getElementById('projectName').value = '';
+                document.getElementById('partnerships').value = '';
+                document.getElementById('activities').value = '';
+                document.getElementById('resources').value = '';
+                document.getElementById('value').value = '';
+                document.getElementById('relationships').value = '';
+                document.getElementById('channels').value = '';
+                document.getElementById('segments').value = '';
+                document.getElementById('revenue').value = '';
+                document.getElementById('costs').value = '';
+                document.getElementById('notes').value = '';
+                alert('✅ تم مسح جميع البيانات');
+            }
+        }
+
+        function printCanvas() {
+            window.print();
+        }
+
+        function exportJSON() {
+            const data = {
+                projectName: document.getElementById('projectName').value,
+                canvas: {
+                    partnerships: document.getElementById('partnerships').value,
+                    activities: document.getElementById('activities').value,
+                    resources: document.getElementById('resources').value,
+                    valueProposition: document.getElementById('value').value,
+                    customerRelationships: document.getElementById('relationships').value,
+                    channels: document.getElementById('channels').value,
+                    customerSegments: document.getElementById('segments').value,
+                    revenueStreams: document.getElementById('revenue').value,
+                    costStructure: document.getElementById('costs').value,
+                    notes: document.getElementById('notes').value
+                },
+                metadata: {
+                    version: '1.0',
+                    exportDate: new Date().toISOString(),
+                    locale: 'ar-SA'
+                }
+            };
+            
+            console.log('Exported Canvas:', data);
+            alert('✅ تم تصدير البيانات! افتح Console للمطورين لرؤية البيانات');
+        }
+
+        // تحميل البيانات المحفوظة تلقائياً عند فتح الصفحة
+        window.addEventListener('load', () => {
+            const autosaved = localStorage.getItem('businessCanvas_autosave');
+            if (autosaved) {
+                try {
+                    const data = JSON.parse(autosaved);
+                    if (confirm('🔄 تم العثور على بيانات محفوظة تلقائياً. هل تريد استعادتها؟')) {
+                        document.getElementById('projectName').value = data.projectName || '';
+                        document.getElementById('partnerships').value = data.partnerships || '';
+                        document.getElementById('activities').value = data.activities || '';
+                        document.getElementById('resources').value = data.resources || '';
+                        document.getElementById('value').value = data.value || '';
+                        document.getElementById('relationships').value = data.relationships || '';
+                        document.getElementById('channels').value = data.channels || '';
+                        document.getElementById('segments').value = data.segments || '';
+                        document.getElementById('revenue').value = data.revenue || '';
+                        document.getElementById('costs').value = data.costs || '';
+                        document.getElementById('notes').value = data.notes || '';
+                    }
+                } catch (error) {
+                    console.error('Error loading autosaved data:', error);
+                }
             }
         });
-    });
-</script>
-
+    </script>
 </body>
-</html>
+                                                                    </html>
