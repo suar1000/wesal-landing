@@ -524,4 +524,172 @@
             const trade = {
                 id: Date.now(),
                 date: new Date().toLocaleString('ar-EG'),
-                crypto: document.getElementById('crypto-select').
+                crypto: document.getElementById('crypto-select').value,
+                entry,
+                type: state.direction,
+                size: tradeAmount,
+                leverage: size.leverage,
+                stars,
+                status: 'مفتوح',
+                result: 0,
+                notes: document.getElementById('trade-notes').value,
+                mood: state.mood,
+                energyLevel: state.energyLevel
+            };
+            
+            state.trades.unshift(trade);
+            addNotification(`✅ تم فتح صفقة ${trade.crypto}`, 'success');
+            saveState();
+            updateStats();
+            
+            // Reset form
+            document.getElementById('entry-price').value = '';
+            document.getElementById('trade-notes').value = '';
+            document.querySelectorAll('.cg-check, .tech-check').forEach(check => check.checked = false);
+            calculateStars();
+            
+            alert('✅ تم فتح الصفقة بنجاح!');
+        }
+
+        // Add Notification
+        function addNotification(message, type = 'info') {
+            const notif = {
+                id: Date.now(),
+                message,
+                type,
+                time: new Date().toLocaleTimeString('ar-EG')
+            };
+            state.notifications.unshift(notif);
+            state.notifications = state.notifications.slice(0, 50);
+            saveState();
+            renderNotifications();
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notifications-list');
+            if (state.notifications.length === 0) {
+                list.innerHTML = '<div class="text-center py-8 text-gray-400">لا توجد إشعارات</div>';
+                return;
+            }
+            
+            list.innerHTML = state.notifications.slice(0, 10).map(notif => `
+                <div class="p-4 rounded-xl ${
+                    notif.type === 'success' ? 'bg-green-600/20 border-l-4 border-green-500' :
+                    notif.type === 'warning' ? 'bg-red-600/20 border-l-4 border-red-500' :
+                    'bg-blue-600/20 border-l-4 border-blue-500'
+                }">
+                    <div class="flex justify-between">
+                        <span>${notif.message}</span>
+                        <span class="text-xs text-gray-400">${notif.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render Trades
+        function renderTrades() {
+            const list = document.getElementById('trades-list');
+            if (state.trades.length === 0) {
+                list.innerHTML = '<div class="text-center py-12 text-gray-400">لا توجد صفقات بعد</div>';
+                return;
+            }
+            
+            list.innerHTML = state.trades.map(trade => `
+                <div class="mb-4 p-6 rounded-2xl ${
+                    trade.status === 'ربح' ? 'bg-green-600/20 border-l-4 border-green-500' :
+                    trade.status === 'خسارة' ? 'bg-red-600/20 border-l-4 border-red-500' :
+                    'bg-blue-600/20 border-l-4 border-blue-500'
+                }">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded-lg font-bold ${trade.type === 'long' ? 'bg-green-600' : 'bg-red-600'}">
+                                    ${trade.crypto} - ${trade.type === 'long' ? 'شراء' : 'بيع'}
+                                </span>
+                                <span class="text-2xl">${'⭐'.repeat(trade.stars)}</span>
+                            </div>
+                            <div class="text-sm text-gray-300">📅 ${trade.date}</div>
+                            <div class="text-sm text-gray-300 mt-1">الحالة: ${trade.mood} | الطاقة: ${trade.energyLevel}/10</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold ${
+                                trade.status === 'ربح' ? 'text-green-400' :
+                                trade.status === 'خسارة' ? 'text-red-400' :
+                                'text-blue-400'
+                            }">${trade.status}</div>
+                            ${trade.result !== 0 ? `<div class="text-xl ${trade.result > 0 ? 'text-green-400' : 'text-red-400'}">$${trade.result.toFixed(2)}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    ${trade.notes ? `<div class="bg-white/5 p-3 rounded-lg mb-3"><div class="text-xs text-gray-400 mb-1">📝 ملاحظات</div><div class="text-sm">${trade.notes}</div></div>` : ''}
+                    
+                    ${trade.status === 'مفتوح' ? `
+                        <div class="flex gap-2 pt-4 border-t border-white/10">
+                            <button onclick="closeTrade(${trade.id}, 'profit')" class="flex-1 bg-green-600 hover:bg-green-700 py-3 rounded-xl font-bold transition">✓ إغلاق بربح</button>
+                            <button onclick="closeTrade(${trade.id}, 'loss')" class="flex-1 bg-red-600 hover:bg-red-700 py-3 rounded-xl font-bold transition">✕ إغلاق بخسارة</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Close Trade
+        function closeTrade(tradeId, result) {
+            state.trades = state.trades.map(t => {
+                if (t.id === tradeId) {
+                    const profit = result === 'profit' ? 1.75 : -0.5;
+                    state.capital += profit;
+                    addNotification(`${result === 'profit' ? '🎉' : '😔'} تم إغلاق الصفقة: ${result === 'profit' ? 'ربح' : 'خسارة'} $${Math.abs(profit).toFixed(2)}`, result === 'profit' ? 'success' : 'warning');
+                    return { ...t, status: result === 'profit' ? 'ربح' : 'خسارة', result: profit };
+                }
+                return t;
+            });
+            saveState();
+            updateStats();
+            renderTrades();
+        }
+
+        // Update Stats
+        function updateStats() {
+            const openTrades = state.trades.filter(t => t.status === 'مفتوح').length;
+            const closedTrades = state.trades.filter(t => t.status !== 'مفتوح');
+            const winningTrades = state.trades.filter(t => t.status === 'ربح').length;
+            const totalProfit = state.trades.reduce((sum, t) => sum + (t.result || 0), 0);
+            const winRate = closedTrades.length > 0 ? (winningTrades / closedTrades.length * 100) : 0;
+            
+            const todayTrades = state.trades.filter(t => {
+                const tradeDate = new Date(t.date).toDateString();
+                const today = new Date().toDateString();
+                return tradeDate === today;
+            }).length;
+            
+            document.getElementById('stat-capital').textContent = state.capital.toFixed(2);
+            document.getElementById('stat-winrate').textContent = winRate.toFixed(1);
+            document.getElementById('stat-profit').textContent = totalProfit.toFixed(2);
+            document.getElementById('stat-open').textContent = openTrades;
+            document.getElementById('current-capital').textContent = state.capital.toFixed(2);
+            document.getElementById('today-trades').textContent = todayTrades;
+            
+            const goalCapital = 1000;
+            const startCapital = 50;
+            const progress = ((state.capital - startCapital) / (goalCapital - startCapital)) * 100;
+            document.getElementById('progress-percent').textContent = progress.toFixed(1) + '%';
+            document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
+            
+            const daysRemaining = 90;
+            const dailyRequired = daysRemaining > 0 ? (goalCapital - state.capital) / daysRemaining : 0;
+            document.getElementById('daily-required').textContent = dailyRequired.toFixed(2);
+        }
+
+        // Initialize
+        updateStats();
+        renderNotifications();
+        calculateStars();
+
+        // Add welcome notification
+        if (state.notifications.length === 0) {
+            addNotification('🎉 مرحباً بك في نظام التداول الذكي!', 'success');
+        }
+    </script>
+</body>
+</html>
