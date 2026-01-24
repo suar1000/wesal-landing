@@ -1,594 +1,527 @@
-import React, { useState, useEffect } from 'react';
-import { Calculator, Clock, TrendingUp, AlertTriangle, BookOpen, Target, DollarSign } from 'lucide-react';
-
-const TradingSystem = () => {
-  const [activeTab, setActiveTab] = useState('schedule');
-  const [capital, setCapital] = useState(50);
-  const [tradePercent, setTradePercent] = useState(10);
-  const [leverage, setLeverage] = useState(30);
-  const [entryPrice, setEntryPrice] = useState('');
-  const [currentPrice, setCurrentPrice] = useState('');
-  const [tradeType, setTradeType] = useState('long');
-  const [trades, setTrades] = useState([]);
-  const [cairoTime, setCairoTime] = useState('');
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const cairoOffset = 2 * 60;
-      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-      const cairoDate = new Date(utc + (cairoOffset * 60000));
-      setCairoTime(cairoDate.toLocaleString('ar-EG', { 
-        timeZone: 'Africa/Cairo',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        weekday: 'long'
-      }));
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const tradeAmount = (capital * tradePercent) / 100;
-  const positionSize = tradeAmount * leverage;
-  const targetProfit = 1.75;
-  const requiredMove = (targetProfit / positionSize) * 100;
-  const stopLossPercent = 0.033;
-  const stopLossAmount = positionSize * (stopLossPercent / 100);
-
-  const calculatePnL = () => {
-    if (!entryPrice || !currentPrice) return 0;
-    const entry = parseFloat(entryPrice);
-    const current = parseFloat(currentPrice);
-    const priceChange = tradeType === 'long' 
-      ? ((current - entry) / entry) * 100
-      : ((entry - current) / entry) * 100;
-    return (positionSize * priceChange) / 100;
-  };
-
-  const calculateTP = () => {
-    if (!entryPrice) return '';
-    const entry = parseFloat(entryPrice);
-    const tpMove = (targetProfit / positionSize) * 100;
-    return tradeType === 'long'
-      ? (entry * (1 + tpMove / 100)).toFixed(8)
-      : (entry * (1 - tpMove / 100)).toFixed(8);
-  };
-
-  const calculateSL = () => {
-    if (!entryPrice) return '';
-    const entry = parseFloat(entryPrice);
-    return tradeType === 'long'
-      ? (entry * (1 - stopLossPercent / 100)).toFixed(8)
-      : (entry * (1 + stopLossPercent / 100)).toFixed(8);
-  };
-
-  const saveTrade = () => {
-    if (!entryPrice) return;
-    const newTrade = {
-      id: Date.now(),
-      date: new Date().toLocaleString('ar-EG'),
-      entry: parseFloat(entryPrice),
-      tp: parseFloat(calculateTP()),
-      sl: parseFloat(calculateSL()),
-      type: tradeType,
-      size: positionSize,
-      status: 'مفتوح'
-    };
-    setTrades([newTrade, ...trades]);
-    setEntryPrice('');
-    setCurrentPrice('');
-  };
-
-  const getCurrentSession = () => {
-    const now = new Date();
-    const cairoOffset = 2 * 60;
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const cairoDate = new Date(utc + (cairoOffset * 60000));
-    const hour = cairoDate.getHours();
-    
-    if (hour >= 15 && hour < 19) return { name: 'الجلسة الذهبية 🌟', quality: 'ممتاز', color: 'bg-yellow-500' };
-    if (hour >= 9 && hour < 12) return { name: 'جلسة لندن', quality: 'جيد جداً', color: 'bg-green-500' };
-    if (hour >= 21 && hour < 23) return { name: 'نهاية نيويورك', quality: 'جيد', color: 'bg-blue-500' };
-    if (hour >= 2 && hour < 11) return { name: 'الجلسة الآسيوية', quality: 'متوسط', color: 'bg-gray-500' };
-    return { name: 'وقت هادئ', quality: 'تجنب التداول', color: 'bg-red-500' };
-  };
-
-  const session = getCurrentSession();
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white p-4" dir="rtl">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 mb-6 shadow-2xl">
-          <h1 className="text-3xl font-bold mb-2">🚀 نظام التداول الاحترافي</h1>
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
-              <Clock className="w-5 h-5" />
-              <span className="font-semibold">{cairoTime}</span>
-            </div>
-            <div className={`flex items-center gap-2 ${session.color} px-4 py-2 rounded-lg`}>
-              <TrendingUp className="w-5 h-5" />
-              <span className="font-semibold">{session.name} - {session.quality}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-2 mb-6 overflow-x-auto">
-          {[
-            { id: 'schedule', icon: Clock, label: 'جدول التداول' },
-            { id: 'calculator', icon: Calculator, label: 'حاسبة الصفقات' },
-            { id: 'strategy', icon: Target, label: 'الاستراتيجية' },
-            { id: 'log', icon: BookOpen, label: 'سجل الصفقات' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
-                activeTab === tab.id 
-                  ? 'bg-blue-600 shadow-lg scale-105' 
-                  : 'bg-white/10 hover:bg-white/20'
-              }`}
-            >
-              <tab.icon className="w-5 h-5" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {activeTab === 'schedule' && (
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Clock className="w-6 h-6" />
-                مواعيد الجلسات
-              </h2>
-              <div className="space-y-4">
-                {[
-                  { name: 'الجلسة الآسيوية', time: '2:00 ص - 11:00 ص', quality: 'متوسط', coins: 'BTC, ETH', strategy: 'Day Trading', color: 'border-l-gray-500' },
-                  { name: 'جلسة لندن', time: '9:00 ص - 6:00 م', quality: 'جيد جداً', coins: 'جميع العملات', strategy: 'مزيج', color: 'border-l-green-500' },
-                  { name: 'الجلسة الذهبية ⭐', time: '3:00 م - 7:00 م', quality: 'ممتاز', coins: 'BTC, ETH, BNB', strategy: 'Scalping', color: 'border-l-yellow-500' },
-                  { name: 'نهاية نيويورك', time: '9:00 م - 11:00 م', quality: 'جيد', coins: 'BTC, ETH', strategy: 'Day Trading', color: 'border-l-blue-500' }
-                ].map((s, i) => (
-                  <div key={i} className={`bg-white/5 p-4 rounded-xl border-l-4 ${s.color}`}>
-                    <div className="font-bold text-lg">{s.name}</div>
-                    <div className="text-sm text-gray-300 mt-1">⏰ {s.time}</div>
-                    <div className="text-sm text-gray-300">📊 الجودة: {s.quality}</div>
-                    <div className="text-sm text-gray-300">💰 العملات: {s.coins}</div>
-                    <div className="text-sm text-yellow-400 mt-2">📈 {s.strategy}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <TrendingUp className="w-6 h-6" />
-                العملات الموصى بها
-              </h2>
-              <div className="space-y-3">
-                {[
-                  { name: 'BTC/USDT', priority: 'أولوية قصوى', best: 'كل الأوقات', volatility: 'متوسط-عالي' },
-                  { name: 'ETH/USDT', priority: 'أولوية قصوى', best: '3-7 م، 9-11 م', volatility: 'عالي' },
-                  { name: 'BNB/USDT', priority: 'عالي', best: '3-7 م', volatility: 'متوسط' },
-                  { name: 'SOL/USDT', priority: 'متوسط', best: '3-7 م', volatility: 'عالي جداً' },
-                  { name: 'XRP/USDT', priority: 'متوسط', best: 'حسب الأخبار', volatility: 'متوسط-عالي' }
-                ].map((coin, i) => (
-                  <div key={i} className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 p-4 rounded-xl">
-                    <div className="font-bold text-xl">{coin.name}</div>
-                    <div className="text-sm text-gray-300 mt-1">🎯 {coin.priority}</div>
-                    <div className="text-sm text-gray-300">⏰ الأفضل: {coin.best}</div>
-                    <div className="text-sm text-yellow-400">📊 التقلب: {coin.volatility}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'calculator' && (
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Calculator className="w-6 h-6" />
-                إعدادات الصفقة
-              </h2>
-              
-              <div className="space-y-4">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التداول الذكي Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #1e3a8a 50%, #1e293b 100%);
+            min-height: 100vh;
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        input[type="range"] {
+            accent-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="text-white p-4">
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-6 mb-6 shadow-2xl">
+            <div class="flex justify-between items-start flex-wrap gap-4">
                 <div>
-                  <label className="block text-sm font-semibold mb-2">رأس المال ($)</label>
-                  <input
-                    type="number"
-                    value={capital}
-                    onChange={(e) => setCapital(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2">نسبة المخاطرة (%)</label>
-                  <input
-                    type="number"
-                    value={tradePercent}
-                    onChange={(e) => setTradePercent(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2">الرافعة المالية (x)</label>
-                  <input
-                    type="number"
-                    value={leverage}
-                    onChange={(e) => setLeverage(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2">نوع الصفقة</label>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setTradeType('long')}
-                      className={`flex-1 py-3 rounded-lg font-bold ${tradeType === 'long' ? 'bg-green-600' : 'bg-white/5'}`}
-                    >
-                      شراء (Long)
-                    </button>
-                    <button
-                      onClick={() => setTradeType('short')}
-                      className={`flex-1 py-3 rounded-lg font-bold ${tradeType === 'short' ? 'bg-red-600' : 'bg-white/5'}`}
-                    >
-                      بيع (Short)
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2">سعر الدخول</label>
-                  <input
-                    type="number"
-                    step="0.00000001"
-                    value={entryPrice}
-                    onChange={(e) => setEntryPrice(e.target.value)}
-                    placeholder="أدخل سعر الدخول"
-                    className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2">السعر الحالي (اختياري)</label>
-                  <input
-                    type="number"
-                    step="0.00000001"
-                    value={currentPrice}
-                    onChange={(e) => setCurrentPrice(e.target.value)}
-                    placeholder="للمتابعة المباشرة"
-                    className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-lg"
-                  />
-                </div>
-
-                <button
-                  onClick={saveTrade}
-                  disabled={!entryPrice}
-                  className="w-full bg-gradient-to-r from-green-600 to-blue-600 py-4 rounded-xl font-bold text-lg hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  💾 حفظ الصفقة
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-blue-600/30 to-purple-600/30 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <DollarSign className="w-6 h-6" />
-                  تفاصيل الصفقة
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center bg-white/10 p-3 rounded-lg">
-                    <span className="text-gray-300">مبلغ الصفقة</span>
-                    <span className="font-bold text-xl">${tradeAmount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center bg-white/10 p-3 rounded-lg">
-                    <span className="text-gray-300">حجم المركز</span>
-                    <span className="font-bold text-xl text-yellow-400">${positionSize.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center bg-white/10 p-3 rounded-lg">
-                    <span className="text-gray-300">الربح المستهدف</span>
-                    <span className="font-bold text-xl text-green-400">${targetProfit.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center bg-white/10 p-3 rounded-lg">
-                    <span className="text-gray-300">الحركة المطلوبة</span>
-                    <span className="font-bold text-xl">{requiredMove.toFixed(3)}%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-green-600/30 to-blue-600/30 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <Target className="w-6 h-6" />
-                  نقاط الدخول والخروج
-                </h3>
-                <div className="space-y-3">
-                  <div className="bg-white/10 p-4 rounded-lg">
-                    <div className="text-sm text-gray-300 mb-1">🎯 Take Profit (TP)</div>
-                    <div className="font-bold text-2xl text-green-400">{calculateTP() || '---'}</div>
-                  </div>
-                  <div className="bg-white/10 p-4 rounded-lg">
-                    <div className="text-sm text-gray-300 mb-1">🛑 Stop Loss (SL)</div>
-                    <div className="font-bold text-2xl text-red-400">{calculateSL() || '---'}</div>
-                    <div className="text-xs text-gray-400 mt-1">الخسارة المحتملة: ${stopLossAmount.toFixed(2)}</div>
-                  </div>
-                  {currentPrice && (
-                    <div className={`p-4 rounded-lg ${calculatePnL() >= 0 ? 'bg-green-600/30' : 'bg-red-600/30'}`}>
-                      <div className="text-sm text-gray-300 mb-1">💰 الربح/الخسارة الحالي</div>
-                      <div className={`font-bold text-2xl ${calculatePnL() >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        ${calculatePnL().toFixed(2)}
-                      </div>
+                    <h1 class="text-3xl font-bold mb-2">⚡ نظام التداول الذكي</h1>
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <div class="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
+                            <span>🕐</span>
+                            <span class="font-semibold" id="cairo-time"></span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-yellow-500 px-4 py-2 rounded-lg" id="session-badge">
+                            <span>🔥</span>
+                            <span class="font-semibold">جلسة أوروبا</span>
+                        </div>
                     </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="bg-red-600/20 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-red-500/50">
-                <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                  <AlertTriangle className="w-6 h-6" />
-                  تحذيرات هامة
-                </h3>
-                <ul className="text-sm space-y-2">
-                  <li className="flex items-start gap-2">
-                    <span>⚠️</span>
-                    <span>حركة {stopLossPercent.toFixed(2)}% ضدك = تصفية كاملة</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span>⚠️</span>
-                    <span>لا تترك الصفقة دون مراقبة مع رافعة 30x</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span>⚠️</span>
-                    <span>ضع SL فوراً عند الدخول</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span>⚠️</span>
-                    <span>صفقة واحدة فقط في نفس الوقت</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'strategy' && (
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl">
-              <h2 className="text-2xl font-bold mb-4">⚡ استراتيجية Scalping</h2>
-              <div className="space-y-4 text-sm">
-                <div className="bg-blue-600/20 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">📍 متى تستخدمها</h3>
-                  <ul className="space-y-1 mr-4">
-                    <li>• الجلسة الذهبية 3-7 مساءً</li>
-                    <li>• تقلبات عالية وسيولة كبيرة</li>
-                    <li>• تركيز كامل على الشاشة</li>
-                  </ul>
                 </div>
                 
-                <div className="bg-green-600/20 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">✅ قواعد الدخول</h3>
-                  <ul className="space-y-1 mr-4">
-                    <li>• كسر مستوى مقاومة دعم قوي</li>
-                    <li>• حجم تداول مرتفع</li>
-                    <li>• شمعة قوية في اتجاه واحد فريم 5m</li>
-                    <li>• مؤشر RSI أقل من 30 شراء أو أكثر من 70 بيع</li>
-                  </ul>
+                <div class="bg-white/20 px-4 py-2 rounded-lg">
+                    <div class="text-xs text-gray-200">صفقات اليوم</div>
+                    <div class="text-2xl font-bold"><span id="today-trades">0</span>/5</div>
                 </div>
-
-                <div className="bg-yellow-600/20 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">🎯 إدارة الصفقة</h3>
-                  <ul className="space-y-1 mr-4">
-                    <li>• مدة الصفقة 5-30 دقيقة</li>
-                    <li>• SL 0.033% من المركز</li>
-                    <li>• TP عند تحقيق 1.5-2 دولار</li>
-                    <li>• إغلاق فوري عند عكس الاتجاه</li>
-                  </ul>
-                </div>
-
-                <div className="bg-red-600/20 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">🚫 تجنب</h3>
-                  <ul className="space-y-1 mr-4">
-                    <li>• التداول أثناء الأخبار الكبرى</li>
-                    <li>• الدخول بدون SL</li>
-                    <li>• المطاردة بعد فوات فرصة</li>
-                    <li>• أكثر من 3 صفقات متتالية خاسرة توقف</li>
-                  </ul>
-                </div>
-              </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl">
-              <h2 className="text-2xl font-bold mb-4">📊 استراتيجية Day Trading</h2>
-              <div className="space-y-4 text-sm">
-                <div className="bg-blue-600/20 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">📍 متى تستخدمها</h3>
-                  <ul className="space-y-1 mr-4">
-                    <li>• الجلسة الآسيوية 2-11 صباحاً</li>
-                    <li>• جلسة لندن 9 ص - 12 ظهراً</li>
-                    <li>• تقلبات متوسطة</li>
-                  </ul>
+            <!-- Goal Progress -->
+            <div class="mt-4 bg-white/10 rounded-xl p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-semibold">🎯 خطة الـ90 يوم → $1,000</span>
+                    <span class="text-2xl font-bold" id="progress-percent">0%</span>
                 </div>
-
-                <div className="bg-green-600/20 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">✅ قواعد الدخول</h3>
-                  <ul className="space-y-1 mr-4">
-                    <li>• اتجاه واضح على فريم 15m أو 1h</li>
-                    <li>• Moving Average 50, 200 تدعم الاتجاه</li>
-                    <li>• MACD إيجابي للشراء سلبي للبيع</li>
-                    <li>• نموذج شموع يابانية Engulfing, Pin Bar</li>
-                  </ul>
+                <div class="w-full bg-white/20 rounded-full h-4 overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-green-500 to-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
                 </div>
-
-                <div className="bg-yellow-600/20 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">🎯 إدارة الصفقة</h3>
-                  <ul className="space-y-1 mr-4">
-                    <li>• مدة الصفقة 1-8 ساعات</li>
-                    <li>• SL تحت آخر قاع شراء أو فوق آخر قمة بيع</li>
-                    <li>• TP نسبة 1:2 مقابل SL</li>
-                    <li>• تحريك SL للتعادل بعد 50% ربح</li>
-                  </ul>
+                <div class="flex justify-between mt-2 text-sm">
+                    <span>$<span id="current-capital">50.00</span> / $1000</span>
+                    <span>⏰ 90 يوم متبقي</span>
+                    <span>📊 $<span id="daily-required">10.56</span>/يوم</span>
                 </div>
-
-                <div className="bg-purple-600/20 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">💡 نصائح إضافية</h3>
-                  <ul className="space-y-1 mr-4">
-                    <li>• راجع الصفقة كل 30-60 دقيقة</li>
-                    <li>• لا تغير الخطة أثناء الصفقة</li>
-                    <li>• سجل ملاحظاتك لكل صفقة</li>
-                    <li>• استراحة 30 دقيقة بعد كل 3 صفقات</li>
-                  </ul>
-                </div>
-              </div>
             </div>
-
-            <div className="md:col-span-2 bg-gradient-to-r from-orange-600/20 to-red-600/20 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-orange-500/50">
-              <h2 className="text-2xl font-bold mb-4">🛡️ قواعد إدارة المخاطر الذهبية</h2>
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
-                <div className="bg-white/10 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">📉 خسائر متتالية</h3>
-                  <ul className="space-y-1">
-                    <li>• خسارتان راجع الاستراتيجية</li>
-                    <li>• 3 خسائر توقف 24 ساعة</li>
-                    <li>• خسارة 20% من الرأسمال توقف أسبوع</li>
-                  </ul>
-                </div>
-                <div className="bg-white/10 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">📈 الأرباح</h3>
-                  <ul className="space-y-1">
-                    <li>• اسحب 50% عند مضاعفة الرأسمال</li>
-                    <li>• لا تزيد حجم الصفقة فجأة</li>
-                    <li>• زيادة تدريجية 10% كل شهر</li>
-                  </ul>
-                </div>
-                <div className="bg-white/10 p-4 rounded-xl">
-                  <h3 className="font-bold mb-2">⏰ الانضباط</h3>
-                  <ul className="space-y-1">
-                    <li>• لا تتداول وأنت متعب أو منفعل</li>
-                    <li>• حدد ساعات تداول ثابتة</li>
-                    <li>• لا تتداول بعد ربح خسارة كبيرة</li>
-                    <li>• استراحة 15 دقيقة كل ساعتين</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'log' && (
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-xl">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              <BookOpen className="w-6 h-6" />
-              سجل الصفقات
-            </h2>
-            
-            {trades.length === 0 ? (
-              <div className="text-center py-12 text-gray-400">
-                <BookOpen className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-xl">لا توجد صفقات محفوظة بعد</p>
-                <p className="text-sm mt-2">استخدم حاسبة الصفقات لإضافة صفقة جديدة</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-white/20">
-                      <th className="text-right p-3">التاريخ</th>
-                      <th className="text-right p-3">النوع</th>
-                      <th className="text-right p-3">الدخول</th>
-                      <th className="text-right p-3">TP</th>
-                      <th className="text-right p-3">SL</th>
-                      <th className="text-right p-3">الحجم</th>
-                      <th className="text-right p-3">الحالة</th>
-                      <th className="text-right p-3">إجراءات</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {trades.map(trade => (
-                      <tr key={trade.id} className="border-b border-white/10 hover:bg-white/5">
-                        <td className="p-3">{trade.date}</td>
-                        <td className="p-3">
-                          <span className={`px-2 py-1 rounded ${trade.type === 'long' ? 'bg-green-600' : 'bg-red-600'}`}>
-                            {trade.type === 'long' ? 'شراء' : 'بيع'}
-                          </span>
-                        </td>
-                        <td className="p-3 font-mono">{trade.entry}</td>
-                        <td className="p-3 font-mono text-green-400">{trade.tp.toFixed(8)}</td>
-                        <td className="p-3 font-mono text-red-400">{trade.sl.toFixed(8)}</td>
-                        <td className="p-3">${trade.size.toFixed(2)}</td>
-                        <td className="p-3">
-                          <span className="px-2 py-1 rounded bg-blue-600">{trade.status}</span>
-                        </td>
-                        <td className="p-3">
-                          <button
-                            onClick={() => setTrades(trades.filter(t => t.id !== trade.id))}
-                            className="text-red-400 hover:text-red-300 text-xs"
-                          >
-                            ✕ حذف
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            <div className="mt-6 grid md:grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-blue-600/30 to-purple-600/30 p-4 rounded-xl">
-                <div className="text-sm text-gray-300">إجمالي الصفقات</div>
-                <div className="text-3xl font-bold mt-2">{trades.length}</div>
-              </div>
-              <div className="bg-gradient-to-br from-green-600/30 to-blue-600/30 p-4 rounded-xl">
-                <div className="text-sm text-gray-300">صفقات مفتوحة</div>
-                <div className="text-3xl font-bold mt-2">{trades.filter(t => t.status === 'مفتوح').length}</div>
-              </div>
-              <div className="bg-gradient-to-br from-yellow-600/30 to-orange-600/30 p-4 rounded-xl">
-                <div className="text-sm text-gray-300">صفقات مغلقة</div>
-                <div className="text-3xl font-bold mt-2">{trades.filter(t => t.status !== 'مفتوح').length}</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="mt-6 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-purple-500/30">
-          <h3 className="text-xl font-bold mb-3">💎 نصائح ذهبية سريعة</h3>
-          <div className="grid md:grid-cols-2 gap-3 text-sm">
-            <div className="flex items-start gap-2">
-              <span>✅</span>
-              <span>راجع الأخبار قبل كل جلسة تداول</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span>✅</span>
-              <span>احتفظ بمذكرة لكل صفقة سبب الدخول المشاعر النتيجة</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span>✅</span>
-              <span>استخدم TradingView للتحليل الفني</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span>✅</span>
-              <span>تابع حجم التداول Volume مؤشر مهم جداً</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span>✅</span>
-              <span>ضع تنبيهات Alerts على مستويات مهمة</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span>✅</span>
-              <span>تعلم من الخسائر أكثر من الأرباح</span>
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
-};
 
-export default TradingSystem;
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <button onclick="changeTab('dashboard')" class="tab-btn bg-blue-600 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold" data-tab="dashboard">
+                📊 لوحة التحكم
+            </button>
+            <button onclick="changeTab('quicktrade')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold" data-tab="quicktrade">
+                ⚡ صفقة سريعة
+            </button>
+            <button onclick="changeTab('prices')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold" data-tab="prices">
+                📈 الأسعار
+            </button>
+            <button onclick="changeTab('log')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold" data-tab="log">
+                📚 السجل
+            </button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="tab-dashboard" class="tab-content">
+            <div class="grid md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-gradient-to-br from-green-600/30 to-blue-600/30 rounded-2xl p-6 border border-white/20">
+                    <div class="text-4xl mb-2">💰</div>
+                    <div class="text-sm text-gray-300">رأس المال</div>
+                    <div class="text-3xl font-bold">$<span id="stat-capital">50.00</span></div>
+                </div>
+                <div class="bg-gradient-to-br from-blue-600/30 to-purple-600/30 rounded-2xl p-6 border border-white/20">
+                    <div class="text-4xl mb-2">🎯</div>
+                    <div class="text-sm text-gray-300">نسبة النجاح</div>
+                    <div class="text-3xl font-bold"><span id="stat-winrate">0</span>%</div>
+                </div>
+                <div class="bg-gradient-to-br from-purple-600/30 to-pink-600/30 rounded-2xl p-6 border border-white/20">
+                    <div class="text-4xl mb-2">📈</div>
+                    <div class="text-sm text-gray-300">الربح</div>
+                    <div class="text-3xl font-bold">$<span id="stat-profit">0.00</span></div>
+                </div>
+                <div class="bg-gradient-to-br from-yellow-600/30 to-orange-600/30 rounded-2xl p-6 border border-white/20">
+                    <div class="text-4xl mb-2">⚡</div>
+                    <div class="text-sm text-gray-300">مفتوحة</div>
+                    <div class="text-3xl font-bold"><span id="stat-open">0</span></div>
+                </div>
+            </div>
+
+            <div class="bg-white/10 rounded-2xl p-6">
+                <h3 class="text-xl font-bold mb-4">🔔 آخر الإشعارات</h3>
+                <div id="notifications-list" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Quick Trade Tab -->
+        <div id="tab-quicktrade" class="tab-content hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white/10 rounded-2xl p-6">
+                    <h2 class="text-2xl font-bold mb-4">⚡ دخول سريع للصفقة</h2>
+
+                    <!-- Energy Level -->
+                    <div class="mb-4 bg-purple-600/20 rounded-xl p-4">
+                        <label class="text-sm font-semibold mb-2 block">مستوى الطاقة: <span id="energy-display">7</span>/10</label>
+                        <input type="range" min="1" max="10" value="7" id="energy-slider" class="w-full">
+                    </div>
+
+                    <!-- Mood -->
+                    <div class="mb-4">
+                        <label class="text-sm font-semibold mb-2 block">الحالة المزاجية</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="setMood('هادئ')" class="mood-btn p-3 rounded-lg bg-white/5" data-mood="هادئ">😌 هادئ</button>
+                            <button onclick="setMood('واثق')" class="mood-btn p-3 rounded-lg bg-white/5" data-mood="واثق">😎 واثق</button>
+                            <button onclick="setMood('متوتر')" class="mood-btn p-3 rounded-lg bg-white/5" data-mood="متوتر">😰 متوتر</button>
+                            <button onclick="setMood('متحمس')" class="mood-btn p-3 rounded-lg bg-white/5" data-mood="متحمس">🔥 متحمس</button>
+                        </div>
+                    </div>
+
+                    <!-- Crypto -->
+                    <div class="mb-4">
+                        <label class="text-sm font-semibold mb-2 block">العملة</label>
+                        <select id="crypto-select" class="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white">
+                            <option value="BTC">BTC - Bitcoin</option>
+                            <option value="ETH">ETH - Ethereum</option>
+                            <option value="SOL">SOL - Solana</option>
+                            <option value="XRP">XRP - Ripple</option>
+                        </select>
+                    </div>
+
+                    <!-- Direction -->
+                    <div class="mb-4">
+                        <label class="text-sm font-semibold mb-2 block">الاتجاه</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="setDirection('long')" class="dir-btn bg-green-600 p-3 rounded-lg font-bold" data-dir="long">🟢 شراء</button>
+                            <button onclick="setDirection('short')" class="dir-btn bg-white/5 p-3 rounded-lg font-bold" data-dir="short">🔴 بيع</button>
+                        </div>
+                    </div>
+
+                    <!-- Entry Price -->
+                    <div class="mb-4">
+                        <label class="text-sm font-semibold mb-2 block">سعر الدخول</label>
+                        <input type="number" id="entry-price" placeholder="أدخل السعر" class="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white">
+                    </div>
+
+                    <!-- CoinGlass Checklist -->
+                    <div class="mb-4 bg-green-600/20 rounded-xl p-4">
+                        <h3 class="font-bold mb-3">🗺️ CoinGlass (<span id="cg-score">0</span>/10 نقاط)</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
+                                <span>Liquidation Heatmap جيد</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
+                                <span>Funding Rate صحي</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
+                                <span>OI يزداد مع السعر</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
+                                <span>Long/Short Ratio</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
+                                <span>Taker Buy > Sell</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Technical Checklist -->
+                    <div class="mb-4 bg-yellow-600/20 rounded-xl p-4">
+                        <h3 class="font-bold mb-3">📊 Technical (<span id="tech-score">0</span>/15 نقاط)</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
+                                <span>RSI مثالي (40-65)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
+                                <span>MACD صعودي</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
+                                <span>السعر فوق EMA 20, 50</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
+                                <span>Volume يزداد</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                                <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
+                                <span>Bollinger Bands</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mb-4">
+                        <label class="text-sm font-semibold mb-2 block">📝 ملاحظات الصفقة</label>
+                        <textarea id="trade-notes" placeholder="سبب الدخول، Setup..." class="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white resize-none" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Star Rating -->
+                    <div class="bg-gradient-to-br from-yellow-600/30 to-orange-600/30 rounded-2xl p-6 border-4 border-yellow-500/50">
+                        <h3 class="text-xl font-bold mb-4 text-center">⭐ التصنيف النهائي</h3>
+                        <div class="text-center mb-4">
+                            <div class="text-6xl mb-2" id="star-display">⭐⭐⭐⭐⭐</div>
+                            <div class="text-3xl font-bold"><span id="stars-count">0</span> / 5 نجوم</div>
+                            <div class="text-lg text-gray-300 mt-2"><span id="total-points">0</span> / 25 نقطة</div>
+                        </div>
+                        <div id="rating-message" class="bg-red-600/30 border-2 border-red-500 rounded-xl p-4 text-center">
+                            <p class="font-bold text-red-400">⚠️ لا يمكن فتح الصفقة!</p>
+                            <p class="text-sm text-gray-300 mt-1">يجب أن يكون التصنيف 3⭐ على الأقل</p>
+                        </div>
+                    </div>
+
+                    <!-- Trade Details -->
+                    <div id="trade-details" class="bg-white/10 rounded-2xl p-6 hidden">
+                        <h3 class="text-xl font-bold mb-4">💰 تفاصيل الصفقة</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between bg-white/5 p-3 rounded-lg">
+                                <span>حجم المركز</span>
+                                <span class="font-bold">$<span id="detail-size">0</span></span>
+                            </div>
+                            <div class="flex justify-between bg-white/5 p-3 rounded-lg">
+                                <span>الرافعة</span>
+                                <span class="font-bold text-yellow-400"><span id="detail-leverage">0</span>x</span>
+                            </div>
+                            <div class="flex justify-between bg-green-600/20 p-3 rounded-lg border border-green-500">
+                                <span>🎯 Take Profit</span>
+                                <span class="font-bold text-green-400">$<span id="detail-tp">0</span></span>
+                            </div>
+                            <div class="flex justify-between bg-red-600/20 p-3 rounded-lg border border-red-500">
+                                <span>🛑 Stop Loss</span>
+                                <span class="font-bold text-red-400">$<span id="detail-sl">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Execute Button -->
+                    <button onclick="executeTrade()" id="execute-btn" class="w-full bg-gradient-to-r from-green-600 to-blue-600 py-6 rounded-2xl font-bold text-2xl opacity-50 cursor-not-allowed" disabled>
+                        ❌ Setup ضعيف
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prices Tab -->
+        <div id="tab-prices" class="tab-content hidden">
+            <div class="bg-white/10 rounded-2xl p-6">
+                <h2 class="text-2xl font-bold mb-4">📈 الأسعار الحية من Binance</h2>
+                <div id="prices-grid" class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center py-12 text-gray-400">جاري تحميل الأسعار...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log Tab -->
+        <div id="tab-log" class="tab-content hidden">
+            <div class="bg-white/10 rounded-2xl p-6">
+                <h2 class="text-2xl font-bold mb-6">📚 سجل الصفقات</h2>
+                <div id="trades-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let state = {
+            capital: 50,
+            trades: [],
+            notifications: [],
+            prices: {},
+            energyLevel: 7,
+            mood: 'هادئ',
+            direction: 'long',
+            selectedCrypto: 'BTC'
+        };
+
+        // Load from localStorage
+        const saved = localStorage.getItem('tradingData');
+        if (saved) {
+            const data = JSON.parse(saved);
+            state.capital = data.capital || 50;
+            state.trades = data.trades || [];
+            state.notifications = data.notifications || [];
+        }
+
+        // Save to localStorage
+        function saveState() {
+            localStorage.setItem('tradingData', JSON.stringify({
+                capital: state.capital,
+                trades: state.trades,
+                notifications: state.notifications
+            }));
+        }
+
+        // Update Time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('cairo-time').textContent = now.toLocaleTimeString('ar-EG');
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Fetch Prices
+        async function fetchPrices() {
+            try {
+                const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT'];
+                const responses = await Promise.all(
+                    symbols.map(s => fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}`).then(r => r.json()).catch(() => null))
+                );
+                
+                responses.forEach((data, i) => {
+                    if (data && data.price) {
+                        const symbol = symbols[i].replace('USDT', '');
+                        state.prices[symbol] = parseFloat(data.price);
+                    }
+                });
+                
+                renderPrices();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        setInterval(fetchPrices, 5000);
+        fetchPrices();
+
+        // Render Prices
+        function renderPrices() {
+            const grid = document.getElementById('prices-grid');
+            grid.innerHTML = Object.entries(state.prices).map(([symbol, price]) => `
+                <div class="bg-white/5 rounded-2xl p-6 hover:scale-105 transition">
+                    <h3 class="text-2xl font-bold mb-2">${symbol}</h3>
+                    <div class="text-3xl font-bold mb-4">$${price.toLocaleString()}</div>
+                    <button onclick="selectCrypto('${symbol}', ${price})" class="w-full bg-blue-600 py-3 rounded-xl font-bold">تداول</button>
+                </div>
+            `).join('');
+        }
+
+        function selectCrypto(symbol, price) {
+            state.selectedCrypto = symbol;
+            document.getElementById('crypto-select').value = symbol;
+            document.getElementById('entry-price').value = price;
+            changeTab('quicktrade');
+        }
+
+        // Tab Management
+        function changeTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-blue-600');
+                el.classList.add('bg-white/10');
+            });
+            
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('bg-blue-600');
+            document.querySelector(`[data-tab="${tab}"]`).classList.remove('bg-white/10');
+
+            if (tab === 'log') renderTrades();
+        }
+
+        // Energy Slider
+        document.getElementById('energy-slider').addEventListener('input', (e) => {
+            state.energyLevel = parseInt(e.target.value);
+            document.getElementById('energy-display').textContent = state.energyLevel;
+        });
+
+        // Mood Selection
+        function setMood(mood) {
+            state.mood = mood;
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600');
+                btn.classList.add('bg-white/5');
+            });
+            document.querySelector(`[data-mood="${mood}"]`).classList.add('bg-blue-600');
+        }
+
+        // Direction
+        function setDirection(dir) {
+            state.direction = dir;
+            document.querySelectorAll('.dir-btn').forEach(btn => {
+                btn.classList.remove('bg-green-600', 'bg-red-600');
+                btn.classList.add('bg-white/5');
+            });
+            const btn = document.querySelector(`[data-dir="${dir}"]`);
+            btn.classList.remove('bg-white/5');
+            btn.classList.add(dir === 'long' ? 'bg-green-600' : 'bg-red-600');
+        }
+
+        // Calculate Stars
+        function calculateStars() {
+            const cgChecks = document.querySelectorAll('.cg-check:checked');
+            const techChecks = document.querySelectorAll('.tech-check:checked');
+            
+            let cgScore = 0;
+            cgChecks.forEach(check => cgScore += parseInt(check.dataset.points));
+            
+            let techScore = 0;
+            techChecks.forEach(check => techScore += parseInt(check.dataset.points));
+            
+            document.getElementById('cg-score').textContent = cgScore;
+            document.getElementById('tech-score').textContent = techScore;
+            
+            const total = cgScore + techScore;
+            document.getElementById('total-points').textContent = total;
+            
+            let stars = 0;
+            if (total >= 21) stars = 5;
+            else if (total >= 17) stars = 4;
+            else if (total >= 13) stars = 3;
+            else if (total >= 9) stars = 2;
+            else stars = 1;
+            
+            document.getElementById('stars-count').textContent = stars;
+            
+            const starDisplay = '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('star-display').textContent = starDisplay;
+            
+            const msg = document.getElementById('rating-message');
+            const executeBtn = document.getElementById('execute-btn');
+            const details = document.getElementById('trade-details');
+            
+            if (stars >= 3) {
+                msg.className = 'bg-green-600/30 border-2 border-green-500 rounded-xl p-4 text-center';
+                msg.innerHTML = '<p class="font-bold text-green-400">✅ Setup مقبول - يمكن الدخول!</p>';
+                executeBtn.disabled = false;
+                executeBtn.className = 'w-full bg-gradient-to-r from-green-600 to-blue-600 py-6 rounded-2xl font-bold text-2xl hover:scale-105 transition';
+                executeBtn.textContent = '🚀 تنفيذ الصفقة';
+                details.classList.remove('hidden');
+                updateTradeDetails(stars);
+            } else {
+                msg.className = 'bg-red-600/30 border-2 border-red-500 rounded-xl p-4 text-center';
+                msg.innerHTML = '<p class="font-bold text-red-400">⚠️ لا يمكن فتح الصفقة!</p><p class="text-sm text-gray-300 mt-1">يجب أن يكون التصنيف 3⭐ على الأقل</p>';
+                executeBtn.disabled = true;
+                executeBtn.className = 'w-full bg-gradient-to-r from-green-600 to-blue-600 py-6 rounded-2xl font-bold text-2xl opacity-50 cursor-not-allowed';
+                executeBtn.textContent = '❌ Setup ضعيف';
+                details.classList.add('hidden');
+            }
+            
+            return stars;
+        }
+
+        function updateTradeDetails(stars) {
+            const sizes = {
+                5: { percent: 10, leverage: 30 },
+                4: { percent: 7, leverage: 20 },
+                3: { percent: 5, leverage: 15 }
+            };
+            
+            const size = sizes[stars] || sizes[3];
+            const tradeAmount = (state.capital * size.percent) / 100;
+            const positionSize = tradeAmount * size.leverage;
+            const targetProfit = 1.75;
+            const requiredMove = (targetProfit / positionSize) * 100;
+            const entry = parseFloat(document.getElementById('entry-price').value || 0);
+            
+            const tp = state.direction === 'long' 
+                ? entry * (1 + requiredMove / 100)
+                : entry * (1 - requiredMove / 100);
+            const sl = state.direction === 'long'
+                ? entry * (1 - 0.033 / 100)
+                : entry * (1 + 0.033 / 100);
+            
+            document.getElementById('detail-size').textContent = tradeAmount.toFixed(2);
+            document.getElementById('detail-leverage').textContent = size.leverage;
+            document.getElementById('detail-tp').textContent = tp.toFixed(8);
+            document.getElementById('detail-sl').textContent = sl.toFixed(8);
+        }
+
+        // Listen to checkboxes
+        document.querySelectorAll('.cg-check, .tech-check').forEach(check => {
+            check.addEventListener('change', calculateStars);
+        });
+
+        document.getElementById('entry-price').addEventListener('input', () => {
+            if (calculateStars() >= 3) updateTradeDetails(calculateStars());
+        });
+
+        // Execute Trade
+        function executeTrade() {
+            const stars = calculateStars();
+            if (stars < 3) return;
+            
+            const entry = parseFloat(document.getElementById('entry-price').value);
+            if (!entry) {
+                addNotification('⚠️ يجب إدخال سعر الدخول', 'warning');
+                return;
+            }
+            
+            const sizes = {
+                5: { percent: 10, leverage: 30 },
+                4: { percent: 7, leverage: 20 },
+                3: { percent: 5, leverage: 15 }
+            };
+            
+            const size = sizes[stars];
+            const tradeAmount = (state.capital * size.percent) / 100;
+            
+            const trade = {
+                id: Date.now(),
+                date: new Date().toLocaleString('ar-EG'),
+                crypto: document.getElementById('crypto-select').
