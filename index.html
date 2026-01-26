@@ -21,6 +21,20 @@
         input[type="range"] {
             accent-color: #3b82f6;
         }
+        .price-up {
+            animation: priceUp 0.5s ease;
+        }
+        .price-down {
+            animation: priceDown 0.5s ease;
+        }
+        @keyframes priceUp {
+            0% { background-color: rgba(34, 197, 94, 0.2); }
+            100% { background-color: transparent; }
+        }
+        @keyframes priceDown {
+            0% { background-color: rgba(239, 68, 68, 0.2); }
+            100% { background-color: transparent; }
+        }
     </style>
 </head>
 <body class="text-white p-4">
@@ -36,9 +50,9 @@
                             <span>🕐</span>
                             <span class="font-semibold" id="cairo-time"></span>
                         </div>
-                        <div class="flex items-center gap-2 bg-yellow-500 px-4 py-2 rounded-lg" id="session-badge">
-                            <span>🔥</span>
-                            <span class="font-semibold">جلسة أوروبا</span>
+                        <div class="flex items-center gap-2 px-4 py-2 rounded-lg" id="session-badge">
+                            <span id="session-icon">🔥</span>
+                            <span class="font-semibold" id="session-name">جاري التحميل...</span>
                         </div>
                     </div>
                 </div>
@@ -144,6 +158,7 @@
                             <option value="ETH">ETH - Ethereum</option>
                             <option value="SOL">SOL - Solana</option>
                             <option value="XRP">XRP - Ripple</option>
+                            <option value="BNB">BNB - Binance Coin</option>
                         </select>
                     </div>
 
@@ -271,10 +286,16 @@
 
         <!-- Prices Tab -->
         <div id="tab-prices" class="tab-content hidden">
-            <div class="bg-white/10 rounded-2xl p-6">
-                <h2 class="text-2xl font-bold mb-4">📈 الأسعار الحية من Binance</h2>
-                <div id="prices-grid" class="grid md:grid-cols-3 gap-6">
-                    <div class="text-center py-12 text-gray-400">جاري تحميل الأسعار...</div>
+            <div class="bg-white/10 rounded-2xl p-6 mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold">📈 الأسعار الحية - أفضل 20 عملة</h2>
+                    <div class="flex items-center gap-2 bg-green-600/20 px-4 py-2 rounded-lg">
+                        <span class="animate-pulse">🟢</span>
+                        <span class="text-sm">تحديث تلقائي كل 3 ثواني</span>
+                    </div>
+                </div>
+                <div id="prices-grid" class="grid md:grid-cols-4 gap-4">
+                    <div class="text-center py-12 text-gray-400 col-span-4">جاري تحميل الأسعار...</div>
                 </div>
             </div>
         </div>
@@ -289,56 +310,112 @@
     </div>
 
     <script>
+        // Top 20 cryptocurrencies by trading volume
+        const TOP_CRYPTOS = [
+            'BTC', 'ETH', 'USDT', 'BNB', 'SOL', 
+            'XRP', 'USDC', 'ADA', 'DOGE', 'AVAX',
+            'TRX', 'LINK', 'DOT', 'MATIC', 'SHIB',
+            'LTC', 'UNI', 'ATOM', 'XLM', 'NEAR'
+        ];
+
         // State
         let state = {
             capital: 50,
             trades: [],
             notifications: [],
             prices: {},
+            previousPrices: {},
             energyLevel: 7,
             mood: 'هادئ',
             direction: 'long',
             selectedCrypto: 'BTC'
         };
 
-        // Load from localStorage
-        const saved = localStorage.getItem('tradingData');
-        if (saved) {
-            const data = JSON.parse(saved);
-            state.capital = data.capital || 50;
-            state.trades = data.trades || [];
-            state.notifications = data.notifications || [];
-        }
+        // Load from memory (not localStorage)
+        let savedData = {
+            capital: 50,
+            trades: [],
+            notifications: []
+        };
 
-        // Save to localStorage
+        // Save to memory
         function saveState() {
-            localStorage.setItem('tradingData', JSON.stringify({
+            savedData = {
                 capital: state.capital,
                 trades: state.trades,
                 notifications: state.notifications
-            }));
+            };
         }
 
-        // Update Time
+        // Load saved data
+        state.capital = savedData.capital;
+        state.trades = savedData.trades;
+        state.notifications = savedData.notifications;
+
+        // Update Time and Session
         function updateTime() {
             const now = new Date();
-            document.getElementById('cairo-time').textContent = now.toLocaleTimeString('ar-EG');
+            const cairoTime = now.toLocaleTimeString('ar-EG', { timeZone: 'Africa/Cairo' });
+            document.getElementById('cairo-time').textContent = cairoTime;
+            
+            // Determine trading session based on Cairo time
+            const hour = parseInt(now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                hour12: false,
+                timeZone: 'Africa/Cairo'
+            }));
+            
+            let session, icon, bgClass;
+            
+            if (hour >= 2 && hour < 10) {
+                session = 'جلسة آسيا';
+                icon = '🌏';
+                bgClass = 'bg-blue-500';
+            } else if (hour >= 10 && hour < 18) {
+                session = 'جلسة أوروبا';
+                icon = '🔥';
+                bgClass = 'bg-yellow-500';
+            } else if (hour >= 18 && hour < 2) {
+                session = 'جلسة أمريكا';
+                icon = '🌎';
+                bgClass = 'bg-green-500';
+            } else {
+                session = 'بين الجلسات';
+                icon = '😴';
+                bgClass = 'bg-gray-500';
+            }
+            
+            const sessionBadge = document.getElementById('session-badge');
+            sessionBadge.className = `flex items-center gap-2 px-4 py-2 rounded-lg ${bgClass}`;
+            document.getElementById('session-icon').textContent = icon;
+            document.getElementById('session-name').textContent = session;
         }
         setInterval(updateTime, 1000);
         updateTime();
 
-        // Fetch Prices
+        // Fetch Prices for Top 20
         async function fetchPrices() {
             try {
-                const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'BNBUSDT'];
+                const symbols = TOP_CRYPTOS.map(s => s + 'USDT');
                 const responses = await Promise.all(
-                    symbols.map(s => fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}`).then(r => r.json()).catch(() => null))
+                    symbols.map(s => 
+                        fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}`)
+                            .then(r => r.json())
+                            .catch(() => null)
+                    )
                 );
                 
                 responses.forEach((data, i) => {
                     if (data && data.price) {
-                        const symbol = symbols[i].replace('USDT', '');
-                        state.prices[symbol] = parseFloat(data.price);
+                        const symbol = TOP_CRYPTOS[i];
+                        const newPrice = parseFloat(data.price);
+                        
+                        // Store previous price for animation
+                        if (state.prices[symbol]) {
+                            state.previousPrices[symbol] = state.prices[symbol];
+                        }
+                        
+                        state.prices[symbol] = newPrice;
                     }
                 });
                 
@@ -347,19 +424,55 @@
                 console.error('Error:', error);
             }
         }
-        setInterval(fetchPrices, 5000);
+        
+        // Update prices every 3 seconds
+        setInterval(fetchPrices, 3000);
         fetchPrices();
 
         // Render Prices
         function renderPrices() {
             const grid = document.getElementById('prices-grid');
-            grid.innerHTML = Object.entries(state.prices).map(([symbol, price]) => `
-                <div class="bg-white/5 rounded-2xl p-6 hover:scale-105 transition">
-                    <h3 class="text-2xl font-bold mb-2">${symbol}</h3>
-                    <div class="text-3xl font-bold mb-4">$${price.toLocaleString()}</div>
-                    <button onclick="selectCrypto('${symbol}', ${price})" class="w-full bg-blue-600 py-3 rounded-xl font-bold">تداول</button>
-                </div>
-            `).join('');
+            
+            if (Object.keys(state.prices).length === 0) {
+                grid.innerHTML = '<div class="text-center py-12 text-gray-400 col-span-4">جاري تحميل الأسعار...</div>';
+                return;
+            }
+            
+            grid.innerHTML = TOP_CRYPTOS.map(symbol => {
+                const price = state.prices[symbol];
+                const prevPrice = state.previousPrices[symbol];
+                
+                if (!price) return '';
+                
+                let priceChangeClass = '';
+                let changeIndicator = '';
+                
+                if (prevPrice) {
+                    if (price > prevPrice) {
+                        priceChangeClass = 'price-up border-green-500';
+                        changeIndicator = '<span class="text-green-400 text-sm">▲</span>';
+                    } else if (price < prevPrice) {
+                        priceChangeClass = 'price-down border-red-500';
+                        changeIndicator = '<span class="text-red-400 text-sm">▼</span>';
+                    }
+                }
+                
+                return `
+                    <div class="bg-white/5 rounded-xl p-4 hover:scale-105 transition border-2 border-transparent ${priceChangeClass}">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">${symbol}</h3>
+                            ${changeIndicator}
+                        </div>
+                        <div class="text-2xl font-bold mb-3">$${price.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: price < 1 ? 6 : 2
+                        })}</div>
+                        <button onclick="selectCrypto('${symbol}', ${price})" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold transition">
+                            تداول الآن
+                        </button>
+                    </div>
+                `;
+            }).join('');
         }
 
         function selectCrypto(symbol, price) {
@@ -367,6 +480,7 @@
             document.getElementById('crypto-select').value = symbol;
             document.getElementById('entry-price').value = price;
             changeTab('quicktrade');
+            addNotification(`✅ تم اختيار ${symbol} بسعر $${price.toLocaleString()}`, 'success');
         }
 
         // Tab Management
@@ -681,7 +795,27 @@
             document.getElementById('daily-required').textContent = dailyRequired.toFixed(2);
         }
 
+        // Update crypto select with all top 20
+        function updateCryptoSelect() {
+            const select = document.getElementById('crypto-select');
+            select.innerHTML = TOP_CRYPTOS.map(crypto => 
+                `<option value="${crypto}">${crypto} - ${getCryptoName(crypto)}</option>`
+            ).join('');
+        }
+
+        function getCryptoName(symbol) {
+            const names = {
+                'BTC': 'Bitcoin', 'ETH': 'Ethereum', 'USDT': 'Tether', 'BNB': 'Binance Coin',
+                'SOL': 'Solana', 'XRP': 'Ripple', 'USDC': 'USD Coin', 'ADA': 'Cardano',
+                'DOGE': 'Dogecoin', 'AVAX': 'Avalanche', 'TRX': 'Tron', 'LINK': 'Chainlink',
+                'DOT': 'Polkadot', 'MATIC': 'Polygon', 'SHIB': 'Shiba Inu', 'LTC': 'Litecoin',
+                'UNI': 'Uniswap', 'ATOM': 'Cosmos', 'XLM': 'Stellar', 'NEAR': 'NEAR Protocol'
+            };
+            return names[symbol] || symbol;
+        }
+
         // Initialize
+        updateCryptoSelect();
         updateStats();
         renderNotifications();
         calculateStars();
@@ -689,6 +823,7 @@
         // Add welcome notification
         if (state.notifications.length === 0) {
             addNotification('🎉 مرحباً بك في نظام التداول الذكي!', 'success');
+            addNotification('📊 تحديث الأسعار تلقائياً كل 3 ثواني', 'info');
         }
     </script>
 </body>
