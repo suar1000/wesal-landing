@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام التداول الذكي Pro</title>
+    <title>نظام التداول الذكي Pro - Futures Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -35,6 +35,13 @@
             0% { background-color: rgba(239, 68, 68, 0.2); }
             100% { background-color: transparent; }
         }
+        .danger-flash {
+            animation: dangerFlash 1s ease infinite;
+        }
+        @keyframes dangerFlash {
+            0%, 100% { border-color: #ef4444; }
+            50% { border-color: #fbbf24; }
+        }
     </style>
 </head>
 <body class="text-white p-4">
@@ -44,7 +51,7 @@
         <div class="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-6 mb-6 shadow-2xl">
             <div class="flex justify-between items-start flex-wrap gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold mb-2">⚡ نظام التداول الذكي</h1>
+                    <h1 class="text-3xl font-bold mb-2">⚡ نظام التداول الذكي - Futures Pro</h1>
                     <div class="flex items-center gap-4 flex-wrap">
                         <div class="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
                             <span>🕐</span>
@@ -54,12 +61,22 @@
                             <span id="session-icon">🔥</span>
                             <span class="font-semibold" id="session-name">جاري التحميل...</span>
                         </div>
+                        <div class="flex items-center gap-2 px-3 py-2 rounded-lg" id="risk-indicator">
+                            <span>⚠️</span>
+                            <span class="text-sm font-semibold">مخاطرة: <span id="current-risk">0</span>%</span>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="bg-white/20 px-4 py-2 rounded-lg">
-                    <div class="text-xs text-gray-200">صفقات اليوم</div>
-                    <div class="text-2xl font-bold"><span id="today-trades">0</span>/5</div>
+                <div class="flex gap-3">
+                    <div class="bg-white/20 px-4 py-2 rounded-lg">
+                        <div class="text-xs text-gray-200">صفقات اليوم</div>
+                        <div class="text-2xl font-bold"><span id="today-trades">0</span>/5</div>
+                    </div>
+                    <div class="bg-white/20 px-4 py-2 rounded-lg">
+                        <div class="text-xs text-gray-200">سلسلة الفوز</div>
+                        <div class="text-2xl font-bold">🔥 <span id="win-streak">0</span></div>
+                    </div>
                 </div>
             </div>
 
@@ -74,24 +91,35 @@
                 </div>
                 <div class="flex justify-between mt-2 text-sm">
                     <span>$<span id="current-capital">50.00</span> / $1000</span>
-                    <span>⏰ 90 يوم متبقي</span>
+                    <span>⏰ <span id="days-remaining">90</span> يوم متبقي</span>
                     <span>📊 $<span id="daily-required">10.56</span>/يوم</span>
                 </div>
+            </div>
+
+            <!-- Risk Warning -->
+            <div id="daily-limit-warning" class="mt-3 bg-red-600/30 border-2 border-red-500 rounded-xl p-3 hidden">
+                <p class="text-center font-bold">🚨 تحذير: وصلت للحد اليومي من الصفقات (5/5) - توقف عن التداول!</p>
+            </div>
+            <div id="loss-streak-warning" class="mt-3 bg-orange-600/30 border-2 border-orange-500 rounded-xl p-3 hidden">
+                <p class="text-center font-bold">⚠️ تحذير: خسارتين متتاليتين - خذ استراحة وراجع استراتيجيتك!</p>
             </div>
         </div>
 
         <!-- Tabs -->
         <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
-            <button onclick="changeTab('dashboard')" class="tab-btn bg-blue-600 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold" data-tab="dashboard">
+            <button onclick="changeTab('dashboard')" class="tab-btn bg-blue-600 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold whitespace-nowrap" data-tab="dashboard">
                 📊 لوحة التحكم
             </button>
-            <button onclick="changeTab('quicktrade')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold" data-tab="quicktrade">
+            <button onclick="changeTab('quicktrade')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold whitespace-nowrap" data-tab="quicktrade">
                 ⚡ صفقة سريعة
             </button>
-            <button onclick="changeTab('prices')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold" data-tab="prices">
+            <button onclick="changeTab('prices')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold whitespace-nowrap" data-tab="prices">
                 📈 الأسعار
             </button>
-            <button onclick="changeTab('log')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold" data-tab="log">
+            <button onclick="changeTab('riskmanager')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold whitespace-nowrap" data-tab="riskmanager">
+                🛡️ إدارة المخاطر
+            </button>
+            <button onclick="changeTab('log')" class="tab-btn bg-white/10 flex items-center gap-2 px-6 py-3 rounded-xl font-semibold whitespace-nowrap" data-tab="log">
                 📚 السجل
             </button>
         </div>
@@ -103,21 +131,57 @@
                     <div class="text-4xl mb-2">💰</div>
                     <div class="text-sm text-gray-300">رأس المال</div>
                     <div class="text-3xl font-bold">$<span id="stat-capital">50.00</span></div>
+                    <div class="text-xs text-gray-400 mt-1">ROI: <span id="roi-percent" class="font-bold">0%</span></div>
                 </div>
                 <div class="bg-gradient-to-br from-blue-600/30 to-purple-600/30 rounded-2xl p-6 border border-white/20">
                     <div class="text-4xl mb-2">🎯</div>
                     <div class="text-sm text-gray-300">نسبة النجاح</div>
                     <div class="text-3xl font-bold"><span id="stat-winrate">0</span>%</div>
+                    <div class="text-xs text-gray-400 mt-1"><span id="wins-count">0</span>W / <span id="losses-count">0</span>L</div>
                 </div>
                 <div class="bg-gradient-to-br from-purple-600/30 to-pink-600/30 rounded-2xl p-6 border border-white/20">
                     <div class="text-4xl mb-2">📈</div>
-                    <div class="text-sm text-gray-300">الربح</div>
-                    <div class="text-3xl font-bold">$<span id="stat-profit">0.00</span></div>
+                    <div class="text-sm text-gray-300">إجمالي الربح/الخسارة</div>
+                    <div class="text-3xl font-bold" id="stat-profit-display">$0.00</div>
+                    <div class="text-xs text-gray-400 mt-1">متوسط/صفقة: $<span id="avg-trade">0.00</span></div>
                 </div>
                 <div class="bg-gradient-to-br from-yellow-600/30 to-orange-600/30 rounded-2xl p-6 border border-white/20">
                     <div class="text-4xl mb-2">⚡</div>
-                    <div class="text-sm text-gray-300">مفتوحة</div>
+                    <div class="text-sm text-gray-300">صفقات مفتوحة</div>
                     <div class="text-3xl font-bold"><span id="stat-open">0</span></div>
+                    <div class="text-xs text-gray-400 mt-1">تعرض: $<span id="total-exposure">0.00</span></div>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white/10 rounded-2xl p-6">
+                    <h3 class="text-xl font-bold mb-4">📊 أداء آخر 10 صفقات</h3>
+                    <div id="performance-chart" class="h-48 flex items-end justify-around gap-1">
+                        <div class="text-center text-gray-400">لا توجد صفقات بعد</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white/10 rounded-2xl p-6">
+                    <h3 class="text-xl font-bold mb-4">🎲 إحصائيات متقدمة</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between bg-white/5 p-3 rounded-lg">
+                            <span>أفضل صفقة</span>
+                            <span class="font-bold text-green-400">$<span id="best-trade">0.00</span></span>
+                        </div>
+                        <div class="flex justify-between bg-white/5 p-3 rounded-lg">
+                            <span>أسوأ صفقة</span>
+                            <span class="font-bold text-red-400">$<span id="worst-trade">0.00</span></span>
+                        </div>
+                        <div class="flex justify-between bg-white/5 p-3 rounded-lg">
+                            <span>معدل الربح للخسارة</span>
+                            <span class="font-bold text-blue-400"><span id="profit-factor">0.00</span>x</span>
+                        </div>
+                        <div class="flex justify-between bg-white/5 p-3 rounded-lg">
+                            <span>أطول سلسلة فوز</span>
+                            <span class="font-bold text-yellow-400">🔥 <span id="max-win-streak">0</span></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -133,32 +197,38 @@
                 <div class="bg-white/10 rounded-2xl p-6">
                     <h2 class="text-2xl font-bold mb-4">⚡ دخول سريع للصفقة</h2>
 
-                    <!-- Energy Level -->
-                    <div class="mb-4 bg-purple-600/20 rounded-xl p-4">
-                        <label class="text-sm font-semibold mb-2 block">مستوى الطاقة: <span id="energy-display">7</span>/10</label>
-                        <input type="range" min="1" max="10" value="7" id="energy-slider" class="w-full">
-                    </div>
-
-                    <!-- Mood -->
-                    <div class="mb-4">
-                        <label class="text-sm font-semibold mb-2 block">الحالة المزاجية</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="setMood('هادئ')" class="mood-btn p-3 rounded-lg bg-white/5" data-mood="هادئ">😌 هادئ</button>
-                            <button onclick="setMood('واثق')" class="mood-btn p-3 rounded-lg bg-white/5" data-mood="واثق">😎 واثق</button>
-                            <button onclick="setMood('متوتر')" class="mood-btn p-3 rounded-lg bg-white/5" data-mood="متوتر">😰 متوتر</button>
-                            <button onclick="setMood('متحمس')" class="mood-btn p-3 rounded-lg bg-white/5" data-mood="متحمس">🔥 متحمس</button>
+                    <!-- Psychological Check -->
+                    <div class="mb-4 bg-purple-600/20 rounded-xl p-4 border-2 border-purple-500">
+                        <h3 class="font-bold mb-3">🧠 الفحص النفسي</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-sm font-semibold mb-2 block">مستوى الطاقة: <span id="energy-display">7</span>/10</label>
+                                <input type="range" min="1" max="10" value="7" id="energy-slider" class="w-full">
+                            </div>
+                            <div>
+                                <label class="text-sm font-semibold mb-2 block">الحالة المزاجية</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="setMood('هادئ')" class="mood-btn p-3 rounded-lg bg-white/5 text-sm" data-mood="هادئ">😌 هادئ</button>
+                                    <button onclick="setMood('واثق')" class="mood-btn p-3 rounded-lg bg-white/5 text-sm" data-mood="واثق">😎 واثق</button>
+                                    <button onclick="setMood('متوتر')" class="mood-btn p-3 rounded-lg bg-white/5 text-sm" data-mood="متوتر">😰 متوتر</button>
+                                    <button onclick="setMood('متحمس')" class="mood-btn p-3 rounded-lg bg-white/5 text-sm" data-mood="متحمس">🔥 متحمس</button>
+                                </div>
+                            </div>
+                            <div id="mood-warning" class="hidden bg-red-600/20 border border-red-500 p-2 rounded text-sm">
+                                ⚠️ حالتك النفسية غير مناسبة للتداول!
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Crypto -->
+                    <!-- Trade Setup -->
                     <div class="mb-4">
-                        <label class="text-sm font-semibold mb-2 block">العملة</label>
+                        <label class="text-sm font-semibold mb-2 block">العملة (Futures فقط)</label>
                         <select id="crypto-select" class="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white">
-                            <option value="BTC">BTC - Bitcoin</option>
-                            <option value="ETH">ETH - Ethereum</option>
-                            <option value="SOL">SOL - Solana</option>
-                            <option value="XRP">XRP - Ripple</option>
-                            <option value="BNB">BNB - Binance Coin</option>
+                            <option value="BTC">BTC - Bitcoin ⭐ موصى</option>
+                            <option value="ETH">ETH - Ethereum ⭐ موصى</option>
+                            <option value="SOL">SOL - Solana ⭐ موصى</option>
+                            <option value="BNB">BNB - Binance Coin ⭐ موصى</option>
+                            <option value="XRP">XRP - Ripple ⭐ موصى</option>
                         </select>
                     </div>
 
@@ -166,100 +236,116 @@
                     <div class="mb-4">
                         <label class="text-sm font-semibold mb-2 block">الاتجاه</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="setDirection('long')" class="dir-btn bg-green-600 p-3 rounded-lg font-bold" data-dir="long">🟢 شراء</button>
-                            <button onclick="setDirection('short')" class="dir-btn bg-white/5 p-3 rounded-lg font-bold" data-dir="short">🔴 بيع</button>
+                            <button onclick="setDirection('long')" class="dir-btn bg-green-600 p-4 rounded-lg font-bold" data-dir="long">🟢 LONG (شراء)</button>
+                            <button onclick="setDirection('short')" class="dir-btn bg-white/5 p-4 rounded-lg font-bold" data-dir="short">🔴 SHORT (بيع)</button>
                         </div>
                     </div>
 
                     <!-- Entry Price -->
                     <div class="mb-4">
                         <label class="text-sm font-semibold mb-2 block">سعر الدخول</label>
-                        <input type="number" id="entry-price" placeholder="أدخل السعر" class="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white">
+                        <div class="flex gap-2">
+                            <input type="number" id="entry-price" placeholder="أدخل السعر" class="flex-1 bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white">
+                            <button onclick="useCurrentPrice()" class="bg-blue-600 hover:bg-blue-700 px-4 rounded-lg font-semibold">السعر الحالي</button>
+                        </div>
                     </div>
 
                     <!-- CoinGlass Checklist -->
-                    <div class="mb-4 bg-green-600/20 rounded-xl p-4">
-                        <h3 class="font-bold mb-3">🗺️ CoinGlass (<span id="cg-score">0</span>/10 نقاط)</h3>
+                    <div class="mb-4 bg-green-600/20 rounded-xl p-4 border-2 border-green-500">
+                        <h3 class="font-bold mb-3">🗺️ CoinGlass Analysis (<span id="cg-score">0</span>/10 نقاط)</h3>
                         <div class="space-y-2">
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
-                                <span>Liquidation Heatmap جيد</span>
+                                <span class="text-sm">✓ Liquidation Heatmap واضح</span>
                             </label>
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
-                                <span>Funding Rate صحي</span>
+                                <span class="text-sm">✓ Funding Rate صحي (&lt;0.05%)</span>
                             </label>
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
-                                <span>OI يزداد مع السعر</span>
+                                <span class="text-sm">✓ OI يتزايد مع اتجاه السعر</span>
                             </label>
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
-                                <span>Long/Short Ratio</span>
+                                <span class="text-sm">✓ Long/Short Ratio مناسب</span>
                             </label>
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="cg-check w-5 h-5" data-points="2">
-                                <span>Taker Buy > Sell</span>
+                                <span class="text-sm">✓ Taker Buy > Sell Volume</span>
                             </label>
                         </div>
                     </div>
 
                     <!-- Technical Checklist -->
-                    <div class="mb-4 bg-yellow-600/20 rounded-xl p-4">
-                        <h3 class="font-bold mb-3">📊 Technical (<span id="tech-score">0</span>/15 نقاط)</h3>
+                    <div class="mb-4 bg-yellow-600/20 rounded-xl p-4 border-2 border-yellow-500">
+                        <h3 class="font-bold mb-3">📊 Technical Analysis (<span id="tech-score">0</span>/15 نقاط)</h3>
                         <div class="space-y-2">
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
-                                <span>RSI مثالي (40-65)</span>
+                                <span class="text-sm">✓ RSI في المنطقة المثالية (40-65)</span>
                             </label>
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
-                                <span>MACD صعودي</span>
+                                <span class="text-sm">✓ MACD يؤكد الاتجاه</span>
                             </label>
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
-                                <span>السعر فوق EMA 20, 50</span>
+                                <span class="text-sm">✓ السعر فوق/تحت EMAs (20, 50)</span>
                             </label>
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
-                                <span>Volume يزداد</span>
+                                <span class="text-sm">✓ Volume يزداد مع الاتجاه</span>
                             </label>
-                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer">
+                            <label class="flex items-center gap-3 p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10">
                                 <input type="checkbox" class="tech-check w-5 h-5" data-points="3">
-                                <span>Bollinger Bands</span>
+                                <span class="text-sm">✓ Bollinger Bands + Support/Resistance</span>
                             </label>
+                        </div>
+                    </div>
+
+                    <!-- Leverage Selection -->
+                    <div class="mb-4 bg-orange-600/20 rounded-xl p-4 border-2 border-orange-500">
+                        <label class="text-sm font-semibold mb-2 block">⚡ الرافعة المالية (محسوبة تلقائياً)</label>
+                        <div id="leverage-display" class="text-center p-3 bg-white/10 rounded-lg">
+                            <div class="text-3xl font-bold text-yellow-400"><span id="selected-leverage">15</span>x</div>
+                            <div class="text-xs text-gray-300 mt-1">بناءً على تقييم Setup</div>
                         </div>
                     </div>
 
                     <!-- Notes -->
                     <div class="mb-4">
-                        <label class="text-sm font-semibold mb-2 block">📝 ملاحظات الصفقة</label>
-                        <textarea id="trade-notes" placeholder="سبب الدخول، Setup..." class="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white resize-none" rows="3"></textarea>
+                        <label class="text-sm font-semibold mb-2 block">📝 ملاحظات الصفقة (مهم!)</label>
+                        <textarea id="trade-notes" placeholder="لماذا تدخل هذه الصفقة؟ ما هو السيناريو؟ أين الـ key levels؟" class="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white resize-none" rows="3"></textarea>
                     </div>
                 </div>
 
                 <div class="space-y-4">
                     <!-- Star Rating -->
                     <div class="bg-gradient-to-br from-yellow-600/30 to-orange-600/30 rounded-2xl p-6 border-4 border-yellow-500/50">
-                        <h3 class="text-xl font-bold mb-4 text-center">⭐ التصنيف النهائي</h3>
+                        <h3 class="text-xl font-bold mb-4 text-center">⭐ Setup Quality Score</h3>
                         <div class="text-center mb-4">
                             <div class="text-6xl mb-2" id="star-display">⭐⭐⭐⭐⭐</div>
                             <div class="text-3xl font-bold"><span id="stars-count">0</span> / 5 نجوم</div>
                             <div class="text-lg text-gray-300 mt-2"><span id="total-points">0</span> / 25 نقطة</div>
                         </div>
                         <div id="rating-message" class="bg-red-600/30 border-2 border-red-500 rounded-xl p-4 text-center">
-                            <p class="font-bold text-red-400">⚠️ لا يمكن فتح الصفقة!</p>
-                            <p class="text-sm text-gray-300 mt-1">يجب أن يكون التصنيف 3⭐ على الأقل</p>
+                            <p class="font-bold text-red-400">⚠️ Setup ضعيف - لا تتداول!</p>
+                            <p class="text-sm text-gray-300 mt-1">الحد الأدنى: 3⭐ (13 نقطة)</p>
                         </div>
                     </div>
 
-                    <!-- Trade Details -->
+                    <!-- Trade Calculator -->
                     <div id="trade-details" class="bg-white/10 rounded-2xl p-6 hidden">
-                        <h3 class="text-xl font-bold mb-4">💰 تفاصيل الصفقة</h3>
+                        <h3 class="text-xl font-bold mb-4">💰 حاسبة الصفقة</h3>
                         <div class="space-y-3">
                             <div class="flex justify-between bg-white/5 p-3 rounded-lg">
-                                <span>حجم المركز</span>
-                                <span class="font-bold">$<span id="detail-size">0</span></span>
+                                <span>رأس المال للمخاطرة</span>
+                                <span class="font-bold text-blue-400">$<span id="detail-size">0</span> (<span id="risk-percent">0</span>%)</span>
+                            </div>
+                            <div class="flex justify-between bg-white/5 p-3 rounded-lg">
+                                <span>حجم المركز (مع الرافعة)</span>
+                                <span class="font-bold text-purple-400">$<span id="position-size">0</span></span>
                             </div>
                             <div class="flex justify-between bg-white/5 p-3 rounded-lg">
                                 <span>الرافعة</span>
@@ -273,13 +359,32 @@
                                 <span>🛑 Stop Loss</span>
                                 <span class="font-bold text-red-400">$<span id="detail-sl">0</span></span>
                             </div>
+                            <div class="flex justify-between bg-blue-600/20 p-3 rounded-lg border border-blue-500">
+                                <span>📊 Risk/Reward Ratio</span>
+                                <span class="font-bold text-blue-400">1:<span id="rr-ratio">3.5</span></span>
+                            </div>
+                            <div class="flex justify-between bg-purple-600/20 p-3 rounded-lg border border-purple-500">
+                                <span>💵 ربح متوقع</span>
+                                <span class="font-bold text-purple-400">$<span id="expected-profit">1.75</span></span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Execute Button -->
                     <button onclick="executeTrade()" id="execute-btn" class="w-full bg-gradient-to-r from-green-600 to-blue-600 py-6 rounded-2xl font-bold text-2xl opacity-50 cursor-not-allowed" disabled>
-                        ❌ Setup ضعيف
+                        ❌ Setup غير جاهز
                     </button>
+
+                    <!-- Quick Tips -->
+                    <div class="bg-blue-600/20 rounded-xl p-4 border border-blue-500">
+                        <h4 class="font-bold mb-2">💡 نصائح سريعة</h4>
+                        <ul class="text-sm space-y-1 text-gray-300">
+                            <li>• لا تتداول في جلسة آسيا (تقلبات عشوائية)</li>
+                            <li>• أفضل وقت: تقاطع أوروبا/أمريكا (4-8 مساءً)</li>
+                            <li>• توقف بعد خسارتين متتاليتين</li>
+                            <li>• لا تزيد الرافعة لتعويض الخسارة!</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -288,14 +393,206 @@
         <div id="tab-prices" class="tab-content hidden">
             <div class="bg-white/10 rounded-2xl p-6 mb-4">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold">📈 الأسعار الحية - أفضل 20 عملة</h2>
+                    <h2 class="text-2xl font-bold">📈 الأسعار الحية - العملات الموصى بها للـ Futures</h2>
                     <div class="flex items-center gap-2 bg-green-600/20 px-4 py-2 rounded-lg">
                         <span class="animate-pulse">🟢</span>
-                        <span class="text-sm">تحديث تلقائي كل 3 ثواني</span>
+                        <span class="text-sm">تحديث كل 3 ثواني</span>
                     </div>
                 </div>
-                <div id="prices-grid" class="grid md:grid-cols-4 gap-4">
-                    <div class="text-center py-12 text-gray-400 col-span-4">جاري تحميل الأسعار...</div>
+                <div id="prices-grid" class="grid md:grid-cols-3 gap-4">
+                    <div class="text-center py-12 text-gray-400 col-span-3">جاري تحميل الأسعار...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Manager Tab -->
+        <div id="tab-riskmanager" class="tab-content hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white/10 rounded-2xl p-6">
+                    <h2 class="text-2xl font-bold mb-4">🛡️ قواعد إدارة المخاطر</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Daily Limit -->
+                        <div class="bg-red-600/20 rounded-xl p-4 border-2 border-red-500">
+                            <h3 class="font-bold mb-3 flex items-center gap-2">
+                                <span>🚫</span>
+                                <span>الحد اليومي للصفقات</span>
+                            </h3>
+                            <div class="flex justify-between items-center">
+                                <span>صفقات اليوم:</span>
+                                <span class="text-2xl font-bold"><span id="rm-today-trades">0</span> / 5</span>
+                            </div>
+                            <div class="mt-2 w-full bg-white/20 rounded-full h-3">
+                                <div id="daily-progress" class="bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 h-full rounded-full transition-all" style="width: 0%"></div>
+                            </div>
+                            <p class="text-xs text-gray-300 mt-2">عند الوصول للحد: توقف فوراً!</p>
+                        </div>
+
+                        <!-- Loss Streak -->
+                        <div class="bg-orange-600/20 rounded-xl p-4 border-2 border-orange-500">
+                            <h3 class="font-bold mb-3 flex items-center gap-2">
+                                <span>⚠️</span>
+                                <span>مراقبة سلسلة الخسارة</span>
+                            </h3>
+                            <div class="flex justify-between items-center">
+                                <span>خسائر متتالية:</span>
+                                <span class="text-2xl font-bold" id="rm-loss-streak">0</span>
+                            </div>
+                            <div class="mt-3 space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full" id="loss-indicator-1"></div>
+                                    <span class="text-sm">الصفقة الأولى</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-gray-600" id="loss-indicator-2"></div>
+                                    <span class="text-sm">الصفقة الثانية - خذ استراحة!</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Capital at Risk -->
+                        <div class="bg-purple-600/20 rounded-xl p-4 border-2 border-purple-500">
+                            <h3 class="font-bold mb-3 flex items-center gap-2">
+                                <span>💰</span>
+                                <span>رأس المال المعرض للخطر</span>
+                            </h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span>رأس المال الكلي:</span>
+                                    <span class="font-bold">$<span id="rm-capital">50.00</span></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>في صفقات مفتوحة:</span>
+                                    <span class="font-bold text-yellow-400">$<span id="rm-at-risk">0.00</span></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>نسبة التعرض:</span>
+                                    <span class="font-bold text-red-400"><span id="rm-exposure">0</span>%</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-300 mt-2">⚠️ لا تتجاوز 30% تعرض في نفس الوقت</p>
+                        </div>
+
+                        <!-- Session Quality -->
+                        <div class="bg-blue-600/20 rounded-xl p-4 border-2 border-blue-500">
+                            <h3 class="font-bold mb-3 flex items-center gap-2">
+                                <span>📊</span>
+                                <span>جودة الجلسة الحالية</span>
+                            </h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span>الجلسة:</span>
+                                    <span class="font-bold" id="rm-session">جلسة أوروبا 🔥</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span>التقييم:</span>
+                                    <span class="font-bold text-lg" id="session-quality">⭐⭐⭐⭐⭐</span>
+                                </div>
+                                <div id="session-advice" class="mt-2 p-2 bg-green-600/20 rounded text-sm">
+                                    ✅ وقت ممتاز للتداول - سيولة عالية
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Risk Rules -->
+                    <div class="bg-white/10 rounded-2xl p-6">
+                        <h2 class="text-2xl font-bold mb-4">📋 القواعد الذهبية</h2>
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3 p-3 bg-green-600/10 rounded-lg border-l-4 border-green-500">
+                                <span class="text-2xl">✅</span>
+                                <div>
+                                    <div class="font-bold">Setup 3⭐ كحد أدنى</div>
+                                    <div class="text-sm text-gray-300">لا تساوم على الجودة أبداً</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-green-600/10 rounded-lg border-l-4 border-green-500">
+                                <span class="text-2xl">✅</span>
+                                <div>
+                                    <div class="font-bold">Stop Loss إلزامي</div>
+                                    <div class="text-sm text-gray-300">كل صفقة بدون استثناء</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-red-600/10 rounded-lg border-l-4 border-red-500">
+                                <span class="text-2xl">❌</span>
+                                <div>
+                                    <div class="font-bold">لا تضاعف بعد الخسارة</div>
+                                    <div class="text-sm text-gray-300">Revenge trading = كارثة مضمونة</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-red-600/10 rounded-lg border-l-4 border-red-500">
+                                <span class="text-2xl">❌</span>
+                                <div>
+                                    <div class="font-bold">لا تتداول في حالة نفسية سيئة</div>
+                                    <div class="text-sm text-gray-300">متوتر أو متعب = لا تداول</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-yellow-600/10 rounded-lg border-l-4 border-yellow-500">
+                                <span class="text-2xl">⚠️</span>
+                                <div>
+                                    <div class="font-bold">راجع CoinGlass دائماً</div>
+                                    <div class="text-sm text-gray-300">Liquidation levels + Funding Rate</div>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 bg-blue-600/10 rounded-lg border-l-4 border-blue-500">
+                                <span class="text-2xl">📝</span>
+                                <div>
+                                    <div class="font-bold">سجل كل صفقة</div>
+                                    <div class="text-sm text-gray-300">التعلم من الأخطاء = نجاح</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leverage Guide -->
+                    <div class="bg-gradient-to-br from-yellow-600/30 to-orange-600/30 rounded-2xl p-6 border-2 border-yellow-500">
+                        <h2 class="text-xl font-bold mb-4">⚡ دليل الرافعة المالية</h2>
+                        <div class="space-y-3">
+                            <div class="bg-white/10 p-3 rounded-lg">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-bold">5⭐ Setup</span>
+                                    <span class="text-2xl font-bold text-yellow-400">30x</span>
+                                </div>
+                                <div class="text-xs text-gray-300">للمحترفين فقط - مخاطرة عالية جداً</div>
+                            </div>
+                            <div class="bg-white/10 p-3 rounded-lg">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-bold">4⭐ Setup</span>
+                                    <span class="text-2xl font-bold text-blue-400">20x</span>
+                                </div>
+                                <div class="text-xs text-gray-300">Setup قوي - مخاطرة متوسطة</div>
+                            </div>
+                            <div class="bg-white/10 p-3 rounded-lg">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-bold">3⭐ Setup</span>
+                                    <span class="text-2xl font-bold text-green-400">15x</span>
+                                </div>
+                                <div class="text-xs text-gray-300">✅ موصى به للمبتدئين</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-red-600/30 rounded-lg border border-red-500">
+                            <p class="text-sm font-bold">⚠️ تحذير هام:</p>
+                            <p class="text-xs text-gray-300">الرافعة العالية تضخم الأرباح والخسائر. يمكن أن تخسر كل رأس مالك في دقائق!</p>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Actions -->
+                    <div class="bg-red-600/20 rounded-2xl p-6 border-2 border-red-500">
+                        <h2 class="text-xl font-bold mb-4">🚨 إجراءات الطوارئ</h2>
+                        <div class="space-y-2">
+                            <button onclick="emergencyCloseAll()" class="w-full bg-red-600 hover:bg-red-700 py-3 rounded-xl font-bold transition">
+                                🛑 إغلاق كل الصفقات المفتوحة
+                            </button>
+                            <button onclick="resetDailyLimit()" class="w-full bg-yellow-600 hover:bg-yellow-700 py-3 rounded-xl font-bold transition">
+                                🔄 إعادة تعيين الحد اليومي
+                            </button>
+                            <button onclick="showRiskCalculator()" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-bold transition">
+                                🧮 حاسبة المخاطر السريعة
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -303,20 +600,20 @@
         <!-- Log Tab -->
         <div id="tab-log" class="tab-content hidden">
             <div class="bg-white/10 rounded-2xl p-6">
-                <h2 class="text-2xl font-bold mb-6">📚 سجل الصفقات</h2>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">📚 سجل الصفقات الكامل</h2>
+                    <button onclick="exportTrades()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition">
+                        📥 تصدير السجل
+                    </button>
+                </div>
                 <div id="trades-list"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Top 20 cryptocurrencies by trading volume
-        const TOP_CRYPTOS = [
-            'BTC', 'ETH', 'USDT', 'BNB', 'SOL', 
-            'XRP', 'USDC', 'ADA', 'DOGE', 'AVAX',
-            'TRX', 'LINK', 'DOT', 'MATIC', 'SHIB',
-            'LTC', 'UNI', 'ATOM', 'XLM', 'NEAR'
-        ];
+        // Best cryptos for futures trading
+        const FUTURES_CRYPTOS = ['BTC', 'ETH', 'SOL', 'BNB', 'XRP'];
 
         // State
         let state = {
@@ -328,22 +625,32 @@
             energyLevel: 7,
             mood: 'هادئ',
             direction: 'long',
-            selectedCrypto: 'BTC'
+            selectedCrypto: 'BTC',
+            lossStreak: 0,
+            winStreak: 0,
+            maxWinStreak: 0,
+            dailyTrades: 0,
+            lastTradeDate: null
         };
 
-        // Load from memory (not localStorage)
+        // Memory storage (not localStorage)
         let savedData = {
             capital: 50,
             trades: [],
-            notifications: []
+            notifications: [],
+            lossStreak: 0,
+            winStreak: 0,
+            maxWinStreak: 0
         };
 
-        // Save to memory
         function saveState() {
             savedData = {
                 capital: state.capital,
                 trades: state.trades,
-                notifications: state.notifications
+                notifications: state.notifications,
+                lossStreak: state.lossStreak,
+                winStreak: state.winStreak,
+                maxWinStreak: state.maxWinStreak
             };
         }
 
@@ -351,6 +658,9 @@
         state.capital = savedData.capital;
         state.trades = savedData.trades;
         state.notifications = savedData.notifications;
+        state.lossStreak = savedData.lossStreak;
+        state.winStreak = savedData.winStreak;
+        state.maxWinStreak = savedData.maxWinStreak;
 
         // Update Time and Session
         function updateTime() {
@@ -358,45 +668,107 @@
             const cairoTime = now.toLocaleTimeString('ar-EG', { timeZone: 'Africa/Cairo' });
             document.getElementById('cairo-time').textContent = cairoTime;
             
-            // Determine trading session based on Cairo time
             const hour = parseInt(now.toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
                 hour12: false,
                 timeZone: 'Africa/Cairo'
             }));
             
-            let session, icon, bgClass;
+            let session, icon, bgClass, quality, advice;
             
             if (hour >= 2 && hour < 10) {
                 session = 'جلسة آسيا';
                 icon = '🌏';
-                bgClass = 'bg-blue-500';
-            } else if (hour >= 10 && hour < 18) {
+                bgClass = 'bg-gray-500';
+                quality = '⭐⭐';
+                advice = '⚠️ تقلبات عشوائية - تجنب التداول';
+            } else if (hour >= 10 && hour < 16) {
                 session = 'جلسة أوروبا';
                 icon = '🔥';
                 bgClass = 'bg-yellow-500';
-            } else if (hour >= 18 && hour < 2) {
+                quality = '⭐⭐⭐⭐⭐';
+                advice = '✅ وقت ممتاز للتداول - سيولة عالية';
+            } else if (hour >= 16 && hour < 20) {
+                session = 'تقاطع أوروبا/أمريكا';
+                icon = '🚀';
+                bgClass = 'bg-green-500';
+                quality = '⭐⭐⭐⭐⭐';
+                advice = '✅ أفضل وقت! حجم تداول ضخم';
+            } else if (hour >= 20 && hour < 2) {
                 session = 'جلسة أمريكا';
                 icon = '🌎';
-                bgClass = 'bg-green-500';
+                bgClass = 'bg-blue-500';
+                quality = '⭐⭐⭐⭐';
+                advice = '✅ وقت جيد - حركة قوية';
             } else {
                 session = 'بين الجلسات';
                 icon = '😴';
-                bgClass = 'bg-gray-500';
+                bgClass = 'bg-gray-600';
+                quality = '⭐';
+                advice = '❌ سيولة منخفضة - تجنب التداول';
             }
             
             const sessionBadge = document.getElementById('session-badge');
             sessionBadge.className = `flex items-center gap-2 px-4 py-2 rounded-lg ${bgClass}`;
             document.getElementById('session-icon').textContent = icon;
             document.getElementById('session-name').textContent = session;
+            
+            // Update risk manager session info
+            const rmSession = document.getElementById('rm-session');
+            if (rmSession) rmSession.textContent = session + ' ' + icon;
+            const sessionQuality = document.getElementById('session-quality');
+            if (sessionQuality) sessionQuality.textContent = quality;
+            const sessionAdvice = document.getElementById('session-advice');
+            if (sessionAdvice) {
+                sessionAdvice.textContent = advice;
+                sessionAdvice.className = `mt-2 p-2 rounded text-sm ${
+                    quality.length >= 4 ? 'bg-green-600/20' : 'bg-red-600/20'
+                }`;
+            }
         }
         setInterval(updateTime, 1000);
         updateTime();
 
-        // Fetch Prices for Top 20
+        // Check daily trades
+        function checkDailyReset() {
+            const today = new Date().toDateString();
+            if (state.lastTradeDate !== today) {
+                state.dailyTrades = 0;
+                state.lastTradeDate = today;
+            }
+            
+            // Count today's trades
+            state.dailyTrades = state.trades.filter(t => {
+                return new Date(t.date).toDateString() === today;
+            }).length;
+            
+            updateDailyLimitUI();
+        }
+
+        function updateDailyLimitUI() {
+            const dailyProgress = (state.dailyTrades / 5) * 100;
+            document.getElementById('today-trades').textContent = state.dailyTrades;
+            const progressBar = document.getElementById('daily-progress');
+            if (progressBar) {
+                progressBar.style.width = dailyProgress + '%';
+            }
+            
+            const rmTodayTrades = document.getElementById('rm-today-trades');
+            if (rmTodayTrades) rmTodayTrades.textContent = state.dailyTrades;
+            
+            // Show warning if limit reached
+            const warning = document.getElementById('daily-limit-warning');
+            if (state.dailyTrades >= 5) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+
+        // Fetch Prices
         async function fetchPrices() {
             try {
-                const symbols = TOP_CRYPTOS.map(s => s + 'USDT');
+                const symbols = FUTURES_CRYPTOS.map(s => s + 'USDT');
                 const responses = await Promise.all(
                     symbols.map(s => 
                         fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}`)
@@ -407,10 +779,9 @@
                 
                 responses.forEach((data, i) => {
                     if (data && data.price) {
-                        const symbol = TOP_CRYPTOS[i];
+                        const symbol = FUTURES_CRYPTOS[i];
                         const newPrice = parseFloat(data.price);
                         
-                        // Store previous price for animation
                         if (state.prices[symbol]) {
                             state.previousPrices[symbol] = state.prices[symbol];
                         }
@@ -425,20 +796,18 @@
             }
         }
         
-        // Update prices every 3 seconds
         setInterval(fetchPrices, 3000);
         fetchPrices();
 
-        // Render Prices
         function renderPrices() {
             const grid = document.getElementById('prices-grid');
             
             if (Object.keys(state.prices).length === 0) {
-                grid.innerHTML = '<div class="text-center py-12 text-gray-400 col-span-4">جاري تحميل الأسعار...</div>';
+                grid.innerHTML = '<div class="text-center py-12 text-gray-400 col-span-3">جاري تحميل الأسعار...</div>';
                 return;
             }
             
-            grid.innerHTML = TOP_CRYPTOS.map(symbol => {
+            grid.innerHTML = FUTURES_CRYPTOS.map(symbol => {
                 const price = state.prices[symbol];
                 const prevPrice = state.previousPrices[symbol];
                 
@@ -446,29 +815,32 @@
                 
                 let priceChangeClass = '';
                 let changeIndicator = '';
+                let changePercent = 0;
                 
                 if (prevPrice) {
+                    changePercent = ((price - prevPrice) / prevPrice) * 100;
                     if (price > prevPrice) {
                         priceChangeClass = 'price-up border-green-500';
-                        changeIndicator = '<span class="text-green-400 text-sm">▲</span>';
+                        changeIndicator = `<span class="text-green-400 text-sm">▲ +${changePercent.toFixed(2)}%</span>`;
                     } else if (price < prevPrice) {
                         priceChangeClass = 'price-down border-red-500';
-                        changeIndicator = '<span class="text-red-400 text-sm">▼</span>';
+                        changeIndicator = `<span class="text-red-400 text-sm">▼ ${changePercent.toFixed(2)}%</span>`;
                     }
                 }
                 
                 return `
-                    <div class="bg-white/5 rounded-xl p-4 hover:scale-105 transition border-2 border-transparent ${priceChangeClass}">
+                    <div class="bg-white/5 rounded-xl p-5 hover:scale-105 transition border-2 border-transparent ${priceChangeClass}">
                         <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">${symbol}</h3>
-                            ${changeIndicator}
+                            <h3 class="text-2xl font-bold">${symbol}</h3>
+                            <span class="text-xs bg-blue-600 px-2 py-1 rounded">FUTURES</span>
                         </div>
-                        <div class="text-2xl font-bold mb-3">$${price.toLocaleString('en-US', {
+                        <div class="text-3xl font-bold mb-2">$${price.toLocaleString('en-US', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: price < 1 ? 6 : 2
                         })}</div>
-                        <button onclick="selectCrypto('${symbol}', ${price})" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold transition">
-                            تداول الآن
+                        ${changeIndicator}
+                        <button onclick="selectCrypto('${symbol}', ${price})" class="w-full mt-3 bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-semibold transition">
+                            تداول الآن ⚡
                         </button>
                     </div>
                 `;
@@ -481,6 +853,16 @@
             document.getElementById('entry-price').value = price;
             changeTab('quicktrade');
             addNotification(`✅ تم اختيار ${symbol} بسعر $${price.toLocaleString()}`, 'success');
+        }
+
+        function useCurrentPrice() {
+            const crypto = document.getElementById('crypto-select').value;
+            const price = state.prices[crypto];
+            if (price) {
+                document.getElementById('entry-price').value = price;
+                addNotification(`✅ تم تحديث السعر: $${price.toLocaleString()}`, 'info');
+                if (calculateStars() >= 3) updateTradeDetails(calculateStars());
+            }
         }
 
         // Tab Management
@@ -496,15 +878,17 @@
             document.querySelector(`[data-tab="${tab}"]`).classList.remove('bg-white/10');
 
             if (tab === 'log') renderTrades();
+            if (tab === 'riskmanager') updateRiskManager();
+            if (tab === 'dashboard') updatePerformanceChart();
         }
 
-        // Energy Slider
+        // Energy & Mood
         document.getElementById('energy-slider').addEventListener('input', (e) => {
             state.energyLevel = parseInt(e.target.value);
             document.getElementById('energy-display').textContent = state.energyLevel;
+            checkPsychologicalState();
         });
 
-        // Mood Selection
         function setMood(mood) {
             state.mood = mood;
             document.querySelectorAll('.mood-btn').forEach(btn => {
@@ -512,9 +896,18 @@
                 btn.classList.add('bg-white/5');
             });
             document.querySelector(`[data-mood="${mood}"]`).classList.add('bg-blue-600');
+            checkPsychologicalState();
         }
 
-        // Direction
+        function checkPsychologicalState() {
+            const warning = document.getElementById('mood-warning');
+            if (state.energyLevel < 5 || state.mood === 'متوتر') {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+        }
+
         function setDirection(dir) {
             state.direction = dir;
             document.querySelectorAll('.dir-btn').forEach(btn => {
@@ -559,20 +952,31 @@
             const executeBtn = document.getElementById('execute-btn');
             const details = document.getElementById('trade-details');
             
+            // Check daily limit
+            if (state.dailyTrades >= 5) {
+                msg.className = 'bg-red-600/30 border-2 border-red-500 rounded-xl p-4 text-center danger-flash';
+                msg.innerHTML = '<p class="font-bold text-red-400">🚫 وصلت للحد اليومي!</p><p class="text-sm text-gray-300 mt-1">لا يمكن فتح صفقات جديدة اليوم</p>';
+                executeBtn.disabled = true;
+                executeBtn.className = 'w-full bg-gradient-to-r from-red-600 to-red-800 py-6 rounded-2xl font-bold text-2xl opacity-50 cursor-not-allowed';
+                executeBtn.textContent = '🚫 تجاوزت الحد اليومي';
+                details.classList.add('hidden');
+                return stars;
+            }
+            
             if (stars >= 3) {
                 msg.className = 'bg-green-600/30 border-2 border-green-500 rounded-xl p-4 text-center';
-                msg.innerHTML = '<p class="font-bold text-green-400">✅ Setup مقبول - يمكن الدخول!</p>';
+                msg.innerHTML = '<p class="font-bold text-green-400">✅ Setup ممتاز - جاهز للتنفيذ!</p>';
                 executeBtn.disabled = false;
                 executeBtn.className = 'w-full bg-gradient-to-r from-green-600 to-blue-600 py-6 rounded-2xl font-bold text-2xl hover:scale-105 transition';
-                executeBtn.textContent = '🚀 تنفيذ الصفقة';
+                executeBtn.textContent = '🚀 تنفيذ الصفقة الآن';
                 details.classList.remove('hidden');
                 updateTradeDetails(stars);
             } else {
                 msg.className = 'bg-red-600/30 border-2 border-red-500 rounded-xl p-4 text-center';
-                msg.innerHTML = '<p class="font-bold text-red-400">⚠️ لا يمكن فتح الصفقة!</p><p class="text-sm text-gray-300 mt-1">يجب أن يكون التصنيف 3⭐ على الأقل</p>';
+                msg.innerHTML = '<p class="font-bold text-red-400">⚠️ Setup ضعيف - لا تتداول!</p><p class="text-sm text-gray-300 mt-1">الحد الأدنى: 3⭐ (13 نقطة)</p>';
                 executeBtn.disabled = true;
                 executeBtn.className = 'w-full bg-gradient-to-r from-green-600 to-blue-600 py-6 rounded-2xl font-bold text-2xl opacity-50 cursor-not-allowed';
-                executeBtn.textContent = '❌ Setup ضعيف';
+                executeBtn.textContent = '❌ Setup غير جاهز';
                 details.classList.add('hidden');
             }
             
@@ -600,13 +1004,33 @@
                 ? entry * (1 - 0.033 / 100)
                 : entry * (1 + 0.033 / 100);
             
+            const slDistance = Math.abs(entry - sl);
+            const tpDistance = Math.abs(tp - entry);
+            const rrRatio = (tpDistance / slDistance).toFixed(1);
+            
             document.getElementById('detail-size').textContent = tradeAmount.toFixed(2);
+            document.getElementById('risk-percent').textContent = size.percent;
+            document.getElementById('position-size').textContent = positionSize.toFixed(2);
             document.getElementById('detail-leverage').textContent = size.leverage;
+            document.getElementById('selected-leverage').textContent = size.leverage;
             document.getElementById('detail-tp').textContent = tp.toFixed(8);
             document.getElementById('detail-sl').textContent = sl.toFixed(8);
+            document.getElementById('rr-ratio').textContent = rrRatio;
+            document.getElementById('expected-profit').textContent = targetProfit.toFixed(2);
+            
+            // Update risk indicator
+            const currentRisk = (state.trades.filter(t => t.status === 'مفتوح').length + 1) * size.percent;
+            document.getElementById('current-risk').textContent = currentRisk.toFixed(0);
+            const riskIndicator = document.getElementById('risk-indicator');
+            if (currentRisk > 30) {
+                riskIndicator.className = 'flex items-center gap-2 px-3 py-2 rounded-lg bg-red-600';
+            } else if (currentRisk > 15) {
+                riskIndicator.className = 'flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-600';
+            } else {
+                riskIndicator.className = 'flex items-center gap-2 px-3 py-2 rounded-lg bg-green-600';
+            }
         }
 
-        // Listen to checkboxes
         document.querySelectorAll('.cg-check, .tech-check').forEach(check => {
             check.addEventListener('change', calculateStars);
         });
@@ -617,13 +1041,35 @@
 
         // Execute Trade
         function executeTrade() {
+            checkDailyReset();
+            
+            if (state.dailyTrades >= 5) {
+                alert('🚫 وصلت للحد اليومي من الصفقات (5/5). توقف عن التداول!');
+                return;
+            }
+            
             const stars = calculateStars();
-            if (stars < 3) return;
+            if (stars < 3) {
+                alert('⚠️ Setup ضعيف جداً. لا تتداول!');
+                return;
+            }
             
             const entry = parseFloat(document.getElementById('entry-price').value);
             if (!entry) {
                 addNotification('⚠️ يجب إدخال سعر الدخول', 'warning');
                 return;
+            }
+            
+            const notes = document.getElementById('trade-notes').value;
+            if (!notes || notes.length < 10) {
+                alert('⚠️ يجب كتابة ملاحظات الصفقة (لماذا تدخل؟)');
+                return;
+            }
+            
+            if (state.energyLevel < 5 || state.mood === 'متوتر') {
+                if (!confirm('⚠️ حالتك النفسية غير مثالية. هل أنت متأكد من المتابعة؟')) {
+                    return;
+                }
             }
             
             const sizes = {
@@ -646,15 +1092,17 @@
                 stars,
                 status: 'مفتوح',
                 result: 0,
-                notes: document.getElementById('trade-notes').value,
+                notes: notes,
                 mood: state.mood,
                 energyLevel: state.energyLevel
             };
             
             state.trades.unshift(trade);
-            addNotification(`✅ تم فتح صفقة ${trade.crypto}`, 'success');
+            state.dailyTrades++;
+            addNotification(`✅ تم فتح صفقة ${trade.crypto} ${trade.type === 'long' ? 'LONG' : 'SHORT'}`, 'success');
             saveState();
             updateStats();
+            checkDailyReset();
             
             // Reset form
             document.getElementById('entry-price').value = '';
@@ -662,10 +1110,9 @@
             document.querySelectorAll('.cg-check, .tech-check').forEach(check => check.checked = false);
             calculateStars();
             
-            alert('✅ تم فتح الصفقة بنجاح!');
+            alert('✅ تم فتح الصفقة بنجاح!\n\n⚠️ لا تنسى:\n• وضع Stop Loss فوراً\n• مراقبة الصفقة\n• إغلاق عند TP');
         }
 
-        // Add Notification
         function addNotification(message, type = 'info') {
             const notif = {
                 id: Date.now(),
@@ -700,7 +1147,6 @@
             `).join('');
         }
 
-        // Render Trades
         function renderTrades() {
             const list = document.getElementById('trades-list');
             if (state.trades.length === 0) {
@@ -718,12 +1164,13 @@
                         <div>
                             <div class="flex items-center gap-3 mb-2">
                                 <span class="px-3 py-1 rounded-lg font-bold ${trade.type === 'long' ? 'bg-green-600' : 'bg-red-600'}">
-                                    ${trade.crypto} - ${trade.type === 'long' ? 'شراء' : 'بيع'}
+                                    ${trade.crypto} - ${trade.type === 'long' ? 'LONG 🟢' : 'SHORT 🔴'}
                                 </span>
                                 <span class="text-2xl">${'⭐'.repeat(trade.stars)}</span>
+                                <span class="text-sm bg-purple-600 px-2 py-1 rounded">${trade.leverage}x</span>
                             </div>
                             <div class="text-sm text-gray-300">📅 ${trade.date}</div>
-                            <div class="text-sm text-gray-300 mt-1">الحالة: ${trade.mood} | الطاقة: ${trade.energyLevel}/10</div>
+                            <div class="text-sm text-gray-300 mt-1">💰 حجم: $${trade.size.toFixed(2)} | الحالة: ${trade.mood} | الطاقة: ${trade.energyLevel}/10</div>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold ${
@@ -739,20 +1186,36 @@
                     
                     ${trade.status === 'مفتوح' ? `
                         <div class="flex gap-2 pt-4 border-t border-white/10">
-                            <button onclick="closeTrade(${trade.id}, 'profit')" class="flex-1 bg-green-600 hover:bg-green-700 py-3 rounded-xl font-bold transition">✓ إغلاق بربح</button>
-                            <button onclick="closeTrade(${trade.id}, 'loss')" class="flex-1 bg-red-600 hover:bg-red-700 py-3 rounded-xl font-bold transition">✕ إغلاق بخسارة</button>
+                            <button onclick="closeTrade(${trade.id}, 'profit')" class="flex-1 bg-green-600 hover:bg-green-700 py-3 rounded-xl font-bold transition">✓ إغلاق بربح ($1.75)</button>
+                            <button onclick="closeTrade(${trade.id}, 'loss')" class="flex-1 bg-red-600 hover:bg-red-700 py-3 rounded-xl font-bold transition">✕ إغلاق بخسارة ($-0.50)</button>
                         </div>
                     ` : ''}
                 </div>
             `).join('');
         }
 
-        // Close Trade
         function closeTrade(tradeId, result) {
             state.trades = state.trades.map(t => {
                 if (t.id === tradeId) {
                     const profit = result === 'profit' ? 1.75 : -0.5;
                     state.capital += profit;
+                    
+                    if (result === 'profit') {
+                        state.winStreak++;
+                        state.lossStreak = 0;
+                        if (state.winStreak > state.maxWinStreak) {
+                            state.maxWinStreak = state.winStreak;
+                        }
+                    } else {
+                        state.lossStreak++;
+                        state.winStreak = 0;
+                        
+                        if (state.lossStreak >= 2) {
+                            addNotification('🚨 خسارتان متتاليتان! خذ استراحة وراجع استراتيجيتك', 'warning');
+                            document.getElementById('loss-streak-warning').classList.remove('hidden');
+                        }
+                    }
+                    
                     addNotification(`${result === 'profit' ? '🎉' : '😔'} تم إغلاق الصفقة: ${result === 'profit' ? 'ربح' : 'خسارة'} $${Math.abs(profit).toFixed(2)}`, result === 'profit' ? 'success' : 'warning');
                     return { ...t, status: result === 'profit' ? 'ربح' : 'خسارة', result: profit };
                 }
@@ -761,28 +1224,48 @@
             saveState();
             updateStats();
             renderTrades();
+            updateLossStreakIndicator();
         }
 
-        // Update Stats
         function updateStats() {
             const openTrades = state.trades.filter(t => t.status === 'مفتوح').length;
             const closedTrades = state.trades.filter(t => t.status !== 'مفتوح');
             const winningTrades = state.trades.filter(t => t.status === 'ربح').length;
+            const losingTrades = state.trades.filter(t => t.status === 'خسارة').length;
             const totalProfit = state.trades.reduce((sum, t) => sum + (t.result || 0), 0);
             const winRate = closedTrades.length > 0 ? (winningTrades / closedTrades.length * 100) : 0;
             
-            const todayTrades = state.trades.filter(t => {
-                const tradeDate = new Date(t.date).toDateString();
-                const today = new Date().toDateString();
-                return tradeDate === today;
-            }).length;
+            const totalExposure = state.trades.filter(t => t.status === 'مفتوح').reduce((sum, t) => sum + t.size, 0);
+            
+            const roi = ((state.capital - 50) / 50) * 100;
+            
+            const profits = state.trades.filter(t => t.result > 0).reduce((sum, t) => sum + t.result, 0);
+            const losses = Math.abs(state.trades.filter(t => t.result < 0).reduce((sum, t) => sum + t.result, 0));
+            const profitFactor = losses > 0 ? (profits / losses) : 0;
+            
+            const bestTrade = Math.max(...state.trades.map(t => t.result || 0), 0);
+            const worstTrade = Math.min(...state.trades.map(t => t.result || 0), 0);
+            
+            const avgTrade = closedTrades.length > 0 ? totalProfit / closedTrades.length : 0;
             
             document.getElementById('stat-capital').textContent = state.capital.toFixed(2);
             document.getElementById('stat-winrate').textContent = winRate.toFixed(1);
-            document.getElementById('stat-profit').textContent = totalProfit.toFixed(2);
+            const profitDisplay = document.getElementById('stat-profit-display');
+            profitDisplay.textContent = '$' + totalProfit.toFixed(2);
+            profitDisplay.className = `text-3xl font-bold ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`;
             document.getElementById('stat-open').textContent = openTrades;
             document.getElementById('current-capital').textContent = state.capital.toFixed(2);
-            document.getElementById('today-trades').textContent = todayTrades;
+            document.getElementById('win-streak').textContent = state.winStreak;
+            
+            document.getElementById('roi-percent').textContent = roi.toFixed(1) + '%';
+            document.getElementById('wins-count').textContent = winningTrades;
+            document.getElementById('losses-count').textContent = losingTrades;
+            document.getElementById('avg-trade').textContent = avgTrade.toFixed(2);
+            document.getElementById('total-exposure').textContent = totalExposure.toFixed(2);
+            document.getElementById('best-trade').textContent = bestTrade.toFixed(2);
+            document.getElementById('worst-trade').textContent = worstTrade.toFixed(2);
+            document.getElementById('profit-factor').textContent = profitFactor.toFixed(2);
+            document.getElementById('max-win-streak').textContent = state.maxWinStreak;
             
             const goalCapital = 1000;
             const startCapital = 50;
@@ -790,40 +1273,127 @@
             document.getElementById('progress-percent').textContent = progress.toFixed(1) + '%';
             document.getElementById('progress-bar').style.width = Math.min(progress, 100) + '%';
             
-            const daysRemaining = 90;
+            const daysRemaining = 90 - Math.floor((Date.now() - new Date('2025-01-01')) / (1000 * 60 * 60 * 24));
             const dailyRequired = daysRemaining > 0 ? (goalCapital - state.capital) / daysRemaining : 0;
+            document.getElementById('days-remaining').textContent = Math.max(daysRemaining, 0);
             document.getElementById('daily-required').textContent = dailyRequired.toFixed(2);
+            
+            checkDailyReset();
         }
 
-        // Update crypto select with all top 20
-        function updateCryptoSelect() {
-            const select = document.getElementById('crypto-select');
-            select.innerHTML = TOP_CRYPTOS.map(crypto => 
-                `<option value="${crypto}">${crypto} - ${getCryptoName(crypto)}</option>`
-            ).join('');
+        function updateRiskManager() {
+            document.getElementById('rm-capital').textContent = state.capital.toFixed(2);
+            
+            const openTrades = state.trades.filter(t => t.status === 'مفتوح');
+            const atRisk = openTrades.reduce((sum, t) => sum + t.size, 0);
+            const exposure = (atRisk / state.capital) * 100;
+            
+            document.getElementById('rm-at-risk').textContent = atRisk.toFixed(2);
+            document.getElementById('rm-exposure').textContent = exposure.toFixed(1);
+            document.getElementById('rm-loss-streak').textContent = state.lossStreak;
+            
+            updateLossStreakIndicator();
         }
 
-        function getCryptoName(symbol) {
-            const names = {
-                'BTC': 'Bitcoin', 'ETH': 'Ethereum', 'USDT': 'Tether', 'BNB': 'Binance Coin',
-                'SOL': 'Solana', 'XRP': 'Ripple', 'USDC': 'USD Coin', 'ADA': 'Cardano',
-                'DOGE': 'Dogecoin', 'AVAX': 'Avalanche', 'TRX': 'Tron', 'LINK': 'Chainlink',
-                'DOT': 'Polkadot', 'MATIC': 'Polygon', 'SHIB': 'Shiba Inu', 'LTC': 'Litecoin',
-                'UNI': 'Uniswap', 'ATOM': 'Cosmos', 'XLM': 'Stellar', 'NEAR': 'NEAR Protocol'
-            };
-            return names[symbol] || symbol;
+        function updateLossStreakIndicator() {
+            const ind1 = document.getElementById('loss-indicator-1');
+            const ind2 = document.getElementById('loss-indicator-2');
+            
+            if (state.lossStreak >= 1) {
+                ind1.className = 'w-3 h-3 rounded-full bg-red-500';
+            } else {
+                ind1.className = 'w-3 h-3 rounded-full bg-gray-600';
+            }
+            
+            if (state.lossStreak >= 2) {
+                ind2.className = 'w-3 h-3 rounded-full bg-red-500 animate-pulse';
+                document.getElementById('loss-streak-warning').classList.remove('hidden');
+            } else {
+                ind2.className = 'w-3 h-3 rounded-full bg-gray-600';
+                document.getElementById('loss-streak-warning').classList.add('hidden');
+            }
+        }
+
+        function updatePerformanceChart() {
+            const chart = document.getElementById('performance-chart');
+            const last10 = state.trades.slice(0, 10).reverse();
+            
+            if (last10.length === 0) {
+                chart.innerHTML = '<div class="text-center text-gray-400 w-full">لا توجد صفقات بعد</div>';
+                return;
+            }
+            
+            const maxResult = Math.max(...last10.map(t => Math.abs(t.result || 0)), 1);
+            
+            chart.innerHTML = last10.map((trade, i) => {
+                const height = Math.abs(trade.result || 0) / maxResult * 100;
+                const isProfit = trade.result > 0;
+                return `
+                    <div class="flex flex-col items-center gap-1" style="flex: 1">
+                        <div class="text-xs text-gray-400">${i + 1}</div>
+                        <div class="w-full bg-${isProfit ? 'green' : trade.result < 0 ? 'red' : 'gray'}-600 rounded-t" style="height: ${height}%"></div>
+                        <div class="text-xs ${isProfit ? 'text-green-400' : trade.result < 0 ? 'text-red-400' : 'text-gray-400'}">${trade.result ? '$' + trade.result.toFixed(1) : '-'}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function emergencyCloseAll() {
+            if (!confirm('🚨 هل أنت متأكد من إغلاق كل الصفقات المفتوحة؟')) return;
+            
+            state.trades = state.trades.map(t => {
+                if (t.status === 'مفتوح') {
+                    return { ...t, status: 'إغلاق طارئ', result: 0 };
+                }
+                return t;
+            });
+            
+            saveState();
+            updateStats();
+            addNotification('🚨 تم إغلاق جميع الصفقات المفتوحة', 'warning');
+            alert('تم إغلاق جميع الصفقات!');
+        }
+
+        function resetDailyLimit() {
+            if (!confirm('هل تريد إعادة تعيين الحد اليومي؟')) return;
+            state.dailyTrades = 0;
+            state.lastTradeDate = null;
+            updateDailyLimitUI();
+            addNotification('✅ تم إعادة تعيين الحد اليومي', 'info');
+        }
+
+        function showRiskCalculator() {
+            const capital = prompt('أدخل رأس المال:', state.capital);
+            if (!capital) return;
+            
+            const risk = prompt('أدخل نسبة المخاطرة (%):', '5');
+            if (!risk) return;
+            
+            const riskAmount = (parseFloat(capital) * parseFloat(risk)) / 100;
+            alert(`💰 حاسبة المخاطر:\n\nرأس المال: $${capital}\nنسبة المخاطرة: ${risk}%\nالمبلغ المعرض: $${riskAmount.toFixed(2)}\n\n⚠️ لا تخاطر بأكثر من هذا المبلغ في صفقة واحدة!`);
+        }
+
+        function exportTrades() {
+            const data = JSON.stringify(state.trades, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trading-log-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            addNotification('📥 تم تصدير السجل بنجاح', 'success');
         }
 
         // Initialize
-        updateCryptoSelect();
         updateStats();
         renderNotifications();
         calculateStars();
+        checkDailyReset();
 
-        // Add welcome notification
         if (state.notifications.length === 0) {
-            addNotification('🎉 مرحباً بك في نظام التداول الذكي!', 'success');
-            addNotification('📊 تحديث الأسعار تلقائياً كل 3 ثواني', 'info');
+            addNotification('🎉 مرحباً بك في نظام التداول الذكي - Futures Pro!', 'success');
+            addNotification('⚠️ تذكر: العقود الآجلة عالية المخاطر - التزم بالقواعد!', 'warning');
+            addNotification('📊 الأسعار تتحدث تلقائياً كل 3 ثواني', 'info');
         }
     </script>
 </body>
